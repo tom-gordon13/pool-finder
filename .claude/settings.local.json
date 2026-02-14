@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:code.claude.com)",
+      "Bash(tree:*)",
+      "WebFetch(domain:bouldercolorado.gov)",
+      "Bash(npm install)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(pkill:*)",
+      "Bash(npm install:*)",
+      "WebSearch",
+      "Bash(npm info:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(cp:*)",
+      "Bash(cat:*)",
+      "Bash(node node_modules/ts-node/dist/bin.js:*)",
+      "Bash(./node_modules/.bin/tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

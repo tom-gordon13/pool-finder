@@ -5,8 +5,9 @@ import {
   fetchNearbyPools,
   getMockPools,
   fetchAvailability,
+  fetchPoolSchedule,
 } from '../services/poolService';
-import { LocationAvailability } from '../types/pool';
+import { LocationAvailability, PoolScheduleResponse } from '../types/pool';
 
 /**
  * Hook to fetch all Boulder pools.
@@ -76,5 +77,13 @@ export function useAvailability(location: string = 'boulder', day?: string) {
     queryKey: ['availability', location, day],
     queryFn: () => fetchAvailability(location, day),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function usePoolSchedule(location: string = 'boulder') {
+  return useQuery<PoolScheduleResponse>({
+    queryKey: ['poolSchedule', location],
+    queryFn: () => fetchPoolSchedule(location),
+    staleTime: 10 * 60 * 1000, // 10 minutes — schedule pages don't change often
   });
 }

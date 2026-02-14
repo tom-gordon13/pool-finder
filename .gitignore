@@ -43,3 +43,10 @@ yarn-error.*
 
 # Docker
 docker-compose.override.yml
+
+# Subdirectory node_modules and build artifacts
+ui/node_modules/
+api/node_modules/
+api/dist/
+ui/.expo/
+ui/web-build/

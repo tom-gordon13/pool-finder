@@ -1,5 +1,5 @@
 {
-  "name": "pool-finder-backend",
+  "name": "pool-finder-api",
   "version": "1.0.0",
   "description": "REST API backend for pool-finder app",
   "main": "dist/server.js",

@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { Pool } from '../types/pool';
+import { Pool, TimeSlot } from '../types/pool';
 import { locations, LocationConfig } from '../data/locations';
 import { fallbackPools } from '../data/fallbackPools';
+import { scrapePoolSchedule } from '../scraper/poolScheduleScraper';
 
 const router = Router();
 
@@ -61,9 +62,9 @@ function haversineDistanceMiles(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return EARTH_RADIUS_MILES * c;
@@ -309,11 +310,126 @@ router.get('/:location/pools/availability', (req: Request, res: Response) => {
     };
   });
 
+  // Extract granular schedule if available
+  const granularSchedule = pools.flatMap(p =>
+    (p.schedule || [])
+      .filter(s => s.dayOfWeek.toLowerCase() === day.toLowerCase())
+      .map(s => ({
+        ...s,
+        poolId: p.id,
+        poolName: p.name
+      }))
+  );
+
   res.json({
     location,
     day,
     hours: hourSlots,
+    schedule: granularSchedule.length > 0 ? granularSchedule : undefined
   });
+});
+
+// ---------------------------------------------------------------------------
+// Schedule cache
+// Scrapes are expensive (4 HTTP requests, ~5-20s total). We cache the result
+// in memory and refresh it in the background every 6 hours. The first request
+// triggers the initial scrape and returns a 202 while it warms up; every
+// subsequent request returns instantly from cache.
+// ---------------------------------------------------------------------------
+
+interface ScheduleCache {
+  location: string;
+  weekStart: string;
+  pools: { poolId: string; poolName: string; slots: TimeSlot[] }[];
+  cachedAt: number; // Date.now()
+}
+
+const scheduleCache = new Map<string, ScheduleCache>();
+const scrapeInProgress = new Set<string>();
+
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+function getWeekStart(): string {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+  return monday.toISOString().split('T')[0];
+}
+
+async function runScrape(location: string): Promise<void> {
+  if (scrapeInProgress.has(location)) return;
+  scrapeInProgress.add(location);
+
+  console.log(`[schedule] Starting background scrape for '${location}'`);
+
+  try {
+    const config = locations.find(l => l.id === location);
+    const pools = loadPoolsForLocation(location);
+    if (!config || !pools) return;
+
+    const scheduleUrls = config.poolScheduleUrls ?? {};
+    const weekStart = getWeekStart();
+
+    // Sequential scraping with a small delay between requests to avoid
+    // rate-limiting from bouldercolorado.gov
+    const results: { poolId: string; poolName: string; slots: TimeSlot[] }[] = [];
+    for (const pool of pools) {
+      const url = scheduleUrls[pool.id];
+      if (!url) {
+        results.push({ poolId: pool.id, poolName: pool.name, slots: [] });
+        continue;
+      }
+      console.log(`[schedule] Scraping '${pool.name}'`);
+      const slots = await scrapePoolSchedule(url);
+      console.log(`[schedule] '${pool.name}': ${slots.length} slots`);
+      results.push({ poolId: pool.id, poolName: pool.name, slots });
+      // Delay between requests to avoid rate-limiting
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    scheduleCache.set(location, { location, weekStart, pools: results, cachedAt: Date.now() });
+    console.log(`[schedule] Cache updated for '${location}'`);
+  } catch (err) {
+    console.error(`[schedule] Background scrape failed for '${location}':`, err);
+  } finally {
+    scrapeInProgress.delete(location);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GET /locations/:location/pools/schedule
+// Returns cached 30-min TimeSlot schedule for every pool in the location.
+// First request returns 202 + triggers background scrape.
+// Subsequent requests return instantly from cache (refreshed every 6 hours).
+// ---------------------------------------------------------------------------
+router.get('/:location/pools/schedule', (req: Request, res: Response) => {
+  const { location } = req.params;
+
+  if (!locations.find(l => l.id === location)) {
+    res.status(404).json({ error: `Location '${location}' not found` });
+    return;
+  }
+
+  const cached = scheduleCache.get(location);
+  const cacheStale = !cached || (Date.now() - cached.cachedAt > CACHE_TTL_MS);
+
+  // Kick off a background refresh if stale (non-blocking)
+  if (cacheStale) {
+    runScrape(location);
+  }
+
+  if (!cached) {
+    // Nothing cached yet — scrape just started, tell the client to retry
+    res.status(202).json({
+      status: 'loading',
+      message: 'Schedule is being fetched, please retry in a few seconds.',
+    });
+    return;
+  }
+
+  res.json(cached);
 });
 
 // ---------------------------------------------------------------------------

@@ -28,23 +28,29 @@ A React Native app that helps users find public pools with lap swim hours in the
 
 ```
 pool-finder-app/
-├── src/
-│   ├── navigation/        # Navigation configuration
-│   │   └── AppNavigator.tsx
-│   ├── screens/          # Screen components
-│   │   ├── MapScreen.tsx
-│   │   ├── PoolListScreen.tsx
-│   │   └── PoolDetailScreen.tsx
-│   ├── store/            # Zustand stores
-│   │   └── poolStore.ts
-│   ├── types/            # TypeScript types
-│   │   └── pool.ts
-│   ├── components/       # Reusable components (coming soon)
-│   └── services/         # API services (coming soon)
-├── App.tsx               # Main app component
-├── docker-compose.yml    # Docker Compose configuration
-├── Dockerfile           # Docker image configuration
-└── package.json         # Dependencies
+├── ui/
+│   ├── src/
+│   │   ├── navigation/        # Navigation configuration
+│   │   │   └── AppNavigator.tsx
+│   │   ├── screens/          # Screen components
+│   │   │   ├── MapScreen.tsx
+│   │   │   ├── PoolListScreen.tsx
+│   │   │   └── PoolDetailScreen.tsx
+│   │   ├── store/            # Zustand stores
+│   │   │   └── poolStore.ts
+│   │   ├── types/            # TypeScript types
+│   │   │   └── pool.ts
+│   │   ├── components/       # Reusable components
+│   │   └── services/         # API services
+│   ├── App.tsx               # Main app component
+│   ├── Dockerfile
+│   └── package.json
+├── api/                      # Express API
+│   ├── src/
+│   ├── Dockerfile
+│   └── package.json
+├── docker-compose.yml        # Docker Compose configuration
+└── .env.example
 ```
 
 ## Getting Started
@@ -63,7 +69,7 @@ docker-compose up
 ```
 
 This will:
-- Build the Docker image
+- Build the Docker images for `api` and `ui`
 - Install dependencies
 - Start the Expo dev server in tunnel mode
 
@@ -80,15 +86,19 @@ The app will load on your device!
 
 If you prefer to run without Docker:
 
-1. **Install dependencies:**
+**API:**
 
 ```bash
+cd api
 npm install
+npm start
 ```
 
-2. **Start the development server:**
+**UI:**
 
 ```bash
+cd ui
+npm install
 npm start
 ```
 
@@ -116,10 +126,11 @@ docker-compose down
 docker-compose up --build
 
 # View logs
-docker-compose logs -f app
+docker-compose logs -f ui
+docker-compose logs -f api
 ```
 
-### NPM Commands
+### NPM Commands (from ui/)
 
 ```bash
 # Start Expo dev server
@@ -160,19 +171,18 @@ function MyComponent() {
 }
 ```
 
-## Environment Setup (Future)
+## Environment Setup
 
-When connecting to a backend API, create a `.env` file:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```env
-EXPO_PUBLIC_API_URL=http://localhost:3000
+EXPO_PUBLIC_API_URL=http://localhost:3001
 EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
 ```
 
 ## Next Steps
 
-### Backend Integration
-- Set up Node.js backend API (placeholder in docker-compose.yml)
+### API Integration
 - Add PostgreSQL with PostGIS for location queries
 - Implement Google Places API integration
 - Build web scraping service for pool schedules
@@ -224,7 +234,7 @@ docker-compose up --build
 docker-compose down
 docker-compose up --build
 
-# Locally
+# Locally (from ui/)
 rm -rf node_modules package-lock.json
 npm install
 ```

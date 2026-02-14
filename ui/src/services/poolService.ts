@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Pool, UserLocation, LocationAvailability, HourAvailability, PoolAvailabilitySlot } from '../types/pool';
+import { Pool, UserLocation, LocationAvailability, HourAvailability, PoolAvailabilitySlot, PoolScheduleResponse } from '../types/pool';
 
 // Set to true to always use mock data (useful for offline development)
 const USE_MOCK_DATA = false;
@@ -313,3 +313,37 @@ export const fetchAvailability = async (
     return computeAvailabilityFromMock(dayParam);
   }
 };
+
+/**
+ * Fetch the weekly pool schedule. The server caches scrape results, so the
+ * first-ever request returns a 202 "loading" response while the background
+ * scrape runs. We poll every 3 seconds until data arrives (up to ~60s).
+ */
+export async function fetchPoolSchedule(location: string): Promise<PoolScheduleResponse> {
+  const MAX_ATTEMPTS = 20;
+  const POLL_INTERVAL_MS = 3000;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await api.get(`/locations/${location}/pools/schedule`, {
+        timeout: 10000,
+        // Allow 202 through without throwing so we can inspect it
+        validateStatus: (status) => status === 200 || status === 202,
+      });
+
+      if (response.status === 200) {
+        return response.data as PoolScheduleResponse;
+      }
+
+      // 202 means the server is still scraping — wait and retry
+      console.log(`[poolService] Schedule loading (attempt ${attempt + 1}), retrying in ${POLL_INTERVAL_MS}ms…`);
+      await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
+    } catch (err) {
+      console.warn('[poolService] fetchPoolSchedule error:', err);
+      return { location, weekStart: '', pools: [] };
+    }
+  }
+
+  console.warn('[poolService] fetchPoolSchedule timed out waiting for schedule data');
+  return { location, weekStart: '', pools: [] };
+}

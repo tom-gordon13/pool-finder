@@ -21,7 +21,7 @@ export default function MapScreen() {
         setUserLocation({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          accuracy: location.coords.accuracy,
+          accuracy: location.coords.accuracy ?? undefined,
         });
       } catch (error) {
         setLocationError('Error getting location');

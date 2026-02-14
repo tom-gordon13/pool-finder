@@ -1,5 +1,5 @@
 {
-  "name": "pool-finder-app",
+  "name": "pool-finder-ui",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -7,9 +7,6 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "docker:up": "docker-compose up",
-    "docker:down": "docker-compose down",
-    "docker:build": "docker-compose up --build",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

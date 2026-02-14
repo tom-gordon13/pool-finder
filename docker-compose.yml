@@ -4,7 +4,7 @@ services:
   # Express API
   api:
     build:
-      context: ./backend
+      context: ./api
       dockerfile: Dockerfile
     container_name: pool-finder-api
     ports:
@@ -12,22 +12,22 @@ services:
     environment:
       - NODE_ENV=development
     volumes:
-      - ./backend:/app
-      - backend_node_modules:/app/node_modules
+      - ./api:/app
+      - api_node_modules:/app/node_modules
     networks:
       - pool-finder-network
 
   # React Native / Expo Web Development Server
-  app:
+  ui:
     build:
-      context: .
+      context: ./ui
       dockerfile: Dockerfile
-    container_name: pool-finder-app
+    container_name: pool-finder-ui
     ports:
       - "8081:8081"   # Expo web (open http://localhost:8081 in your browser)
     volumes:
-      - .:/app
-      - node_modules:/app/node_modules
+      - ./ui:/app
+      - ui_node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
       # Browser fetches the API directly from the host machine, not via the Docker network
@@ -40,8 +40,8 @@ services:
       - pool-finder-network
 
 volumes:
-  node_modules:
-  backend_node_modules:
+  ui_node_modules:
+  api_node_modules:
 
 networks:
   pool-finder-network:
