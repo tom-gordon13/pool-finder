@@ -19,7 +19,9 @@
       "Bash(cp:*)",
       "Bash(cat:*)",
       "Bash(node node_modules/ts-node/dist/bin.js:*)",
-      "Bash(./node_modules/.bin/tsc:*)"
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

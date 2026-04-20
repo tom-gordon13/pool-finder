@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import poolsRouter from './routes/pools';
 import locationsRouter from './routes/locations';
+import { runScraper } from './scraper';
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
@@ -45,13 +46,15 @@ app.use('/pools', (req: Request, _res: Response, next: NextFunction) => {
   next();
 }, locationsRouter);
 
-// Trigger re-scrape (stub — logs and returns 202 Accepted)
+// Trigger re-scrape — called by Vercel cron daily at 3 AM UTC (see vercel.json).
+// Responds immediately with 202 then runs the scraper asynchronously so the
+// HTTP response is not held open for the full scrape duration.
 app.post('/scrape', (_req: Request, res: Response) => {
-  console.log('[scrape] Re-scrape triggered at', new Date().toISOString());
-  res.status(202).json({
-    status: 'accepted',
-    message: 'Scrape job queued',
-    timestamp: new Date().toISOString(),
+  const timestamp = new Date().toISOString();
+  console.log('[scrape] Re-scrape triggered at', timestamp);
+  res.status(202).json({ status: 'accepted', timestamp });
+  runScraper().catch((err) => {
+    console.error('[scrape] Scraper failed:', err);
   });
 });
 
@@ -71,24 +74,26 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // ---------------------------------------------------------------------------
-// Start
+// Start (local dev only — Vercel imports this file as a module, not a server)
 // ---------------------------------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`Pool Finder API running on http://localhost:${PORT}`);
-  console.log(`  GET  /health`);
-  console.log(`  GET  /locations`);
-  console.log(`  GET  /locations/:location/pools`);
-  console.log(`  GET  /locations/:location/pools/nearby?lat=&lng=&radius=`);
-  console.log(`  GET  /locations/:location/pools/search?q=`);
-  console.log(`  GET  /locations/:location/pools/availability?day=`);
-  console.log(`  GET  /locations/:location/pools/:id`);
-  console.log(`  --- Backwards-compat aliases (defaults to boulder) ---`);
-  console.log(`  GET  /pools`);
-  console.log(`  GET  /pools/nearby?lat=&lng=&radius=`);
-  console.log(`  GET  /pools/search?q=`);
-  console.log(`  GET  /pools/availability?day=`);
-  console.log(`  GET  /pools/:id`);
-  console.log(`  POST /scrape`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Pool Finder API running on http://localhost:${PORT}`);
+    console.log(`  GET  /health`);
+    console.log(`  GET  /locations`);
+    console.log(`  GET  /locations/:location/pools`);
+    console.log(`  GET  /locations/:location/pools/nearby?lat=&lng=&radius=`);
+    console.log(`  GET  /locations/:location/pools/search?q=`);
+    console.log(`  GET  /locations/:location/pools/availability?day=`);
+    console.log(`  GET  /locations/:location/pools/:id`);
+    console.log(`  --- Backwards-compat aliases (defaults to boulder) ---`);
+    console.log(`  GET  /pools`);
+    console.log(`  GET  /pools/nearby?lat=&lng=&radius=`);
+    console.log(`  GET  /pools/search?q=`);
+    console.log(`  GET  /pools/availability?day=`);
+    console.log(`  GET  /pools/:id`);
+    console.log(`  POST /scrape`);
+  });
+}
 
 export default app;

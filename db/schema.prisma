@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../api/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Locality {
+  id         String   @id
+  name       String
+  base_url   String?
+  center_lat Float
+  center_lng Float
+
+  pools         Pool[]
+  scrape_alerts ScrapeAlert[]
+
+  @@map("localities")
+}
+
+model Pool {
+  id           String   @id
+  locality_id  String
+  name         String
+  address      String   @default("")
+  latitude     Float
+  longitude    Float
+  phone_number String?
+  website      String?
+  schedule_url String?
+  lane_count   Int?
+  last_scraped DateTime?
+
+  locality     Locality       @relation(fields: [locality_id], references: [id])
+  lap_swim_hours LapSwimHour[]
+  time_slots   TimeSlot[]
+
+  @@map("pools")
+}
+
+model LapSwimHour {
+  id          Int    @id @default(autoincrement())
+  pool_id     String
+  day_of_week String
+  open_time   String
+  close_time  String
+
+  pool Pool @relation(fields: [pool_id], references: [id], onDelete: Cascade)
+
+  @@map("lap_swim_hours")
+}
+
+model TimeSlot {
+  id          Int     @id @default(autoincrement())
+  pool_id     String
+  day_of_week String
+  start_hour  Float
+  lanes       Int
+
+  pool Pool @relation(fields: [pool_id], references: [id], onDelete: Cascade)
+
+  @@map("time_slots")
+}
+
+model ScrapeAlert {
+  id               Int       @id @default(autoincrement())
+  locality_id      String
+  pool_id          String?
+  scraper_name     String
+  failure_reason   String
+  scrape_url       String?
+  failed_at        DateTime  @default(now())
+  resolved_at      DateTime?
+  last_good_scrape DateTime?
+
+  locality         Locality  @relation(fields: [locality_id], references: [id])
+
+  @@map("scrape_alerts")
+}

@@ -1,6 +1,24 @@
-version: '3.8'
-
 services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:16-alpine
+    container_name: pool-finder-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=pool_finder
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pool-finder-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pool_finder"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   # Express API
   api:
     build:
@@ -11,11 +29,21 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/pool_finder
     volumes:
       - ./api:/app
+      - ./db:/db
       - api_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - pool-finder-network
+    # Push schema to DB, seed, then start the server
+    command: >
+      sh -c "npx prisma db push --schema=/db/schema.prisma &&
+             npx ts-node src/db/seed.ts &&
+             npx ts-node src/server.ts"
 
   # React Native / Expo Web Development Server
   ui:
@@ -40,6 +68,7 @@ services:
       - pool-finder-network
 
 volumes:
+  postgres_data:
   ui_node_modules:
   api_node_modules:
 

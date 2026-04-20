@@ -5,6 +5,7 @@ import { Pool, TimeSlot } from '../types/pool';
 import { locations, LocationConfig } from '../data/locations';
 import { fallbackPools } from '../data/fallbackPools';
 import { scrapePoolSchedule } from '../scraper/poolScheduleScraper';
+import { prisma } from '../db/client';
 
 const router = Router();
 
@@ -71,18 +72,88 @@ function haversineDistanceMiles(
 }
 
 /**
+ * Returns true when the lastScraped timestamp is older than 6 hours or absent.
+ */
+function isDataStale(lastScraped: string | undefined): boolean {
+  if (!lastScraped) return true;
+  const age = Date.now() - new Date(lastScraped).getTime();
+  return age > 6 * 60 * 60 * 1000; // 6 hours
+}
+
+/**
+ * Load pools for a location directly from the PostgreSQL database via Prisma.
+ * Returns null if the DB query throws or returns no rows.
+ */
+async function loadPoolsFromDB(localityId: string): Promise<Pool[] | null> {
+  try {
+    const dbPools = await prisma.pool.findMany({
+      where: { locality_id: localityId },
+      include: { lap_swim_hours: true, time_slots: true },
+    });
+
+    if (!dbPools || dbPools.length === 0) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (dbPools as any[]).map((pool: any) => ({
+      id: pool.id as string,
+      name: pool.name as string,
+      address: pool.address as string,
+      city: pool.locality_id as string,
+      location: { latitude: pool.latitude as number, longitude: pool.longitude as number },
+      phoneNumber: (pool.phone_number ?? undefined) as string | undefined,
+      website: (pool.website ?? undefined) as string | undefined,
+      isPublic: true,
+      lapSwimHours: (pool.lap_swim_hours as any[]).map((h: any) => ({
+        dayOfWeek: h.day_of_week as string,
+        openTime: h.open_time as string,
+        closeTime: h.close_time as string,
+      })),
+      schedule: (pool.time_slots as any[]).map((s: any) => ({
+        dayOfWeek: s.day_of_week as string,
+        startHour: s.start_hour as number,
+        lanes: s.lanes as number,
+      })),
+      laneCount: (pool.lane_count ?? 6) as number,
+      lastUpdated: pool.last_scraped ? (pool.last_scraped as Date).toISOString() : undefined,
+    })) as Pool[];
+  } catch (err) {
+    console.warn('[locations] DB query failed, falling back to file data:', err);
+    return null;
+  }
+}
+
+/**
  * Load pools for a given location config.
  * Tries to load from backend/data/{config.dataFile}, falls back to
  * fallbackPools filtered by city if the file is missing/corrupt.
  * Returns null if locationId is completely unknown.
  */
-function loadPoolsForLocation(locationId: string): Pool[] | null {
+async function loadPoolsForLocation(locationId: string): Promise<Pool[] | null> {
   const config: LocationConfig | undefined = locations.find(
     (l) => l.id === locationId
   );
 
   if (!config) return null;
 
+  // -------------------------------------------------------------------------
+  // 1. Try the database first (when DATABASE_URL is configured)
+  // -------------------------------------------------------------------------
+  if (process.env.DATABASE_URL) {
+    const dbPools = await loadPoolsFromDB(locationId);
+    if (dbPools && dbPools.length > 0) {
+      console.log(
+        `[locations] Loaded ${dbPools.length} pools from DB for '${locationId}'`
+      );
+      return dbPools;
+    }
+    console.log(
+      `[locations] DB returned no pools for '${locationId}', falling back to file data`
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. Fall back to JSON file, then hardcoded fallback data
+  // -------------------------------------------------------------------------
   const dataFilePath = path.resolve(__dirname, '../../data', config.dataFile);
 
   try {
@@ -113,36 +184,81 @@ function loadPoolsForLocation(locationId: string): Pool[] | null {
 }
 
 // ---------------------------------------------------------------------------
+// Active-alert loader
+// ---------------------------------------------------------------------------
+
+/**
+ * Shape returned by loadActiveAlertsForLocality.
+ */
+interface ActiveAlert {
+  poolId: string | null;
+  poolName: string | null;
+  reason: string;
+  failedAt: string;
+  lastGoodScrape: string | null;
+}
+
+/**
+ * Fetch all unresolved scrape alerts for a given locality.
+ * Returns an empty array on error so the pools endpoint never hard-fails
+ * because of the alerts sub-query.
+ */
+async function loadActiveAlertsForLocality(localityId: string): Promise<ActiveAlert[]> {
+  try {
+    const rows = await prisma.scrapeAlert.findMany({
+      where:   { locality_id: localityId, resolved_at: null },
+      orderBy: { failed_at: 'desc' },
+    });
+
+    return rows.map((row) => ({
+      poolId:        row.pool_id ?? null,
+      poolName:      null, // pool_id is not joined to Pool here; failure_reason contains context
+      reason:        row.failure_reason,
+      failedAt:      row.failed_at.toISOString(),
+      lastGoodScrape: row.last_good_scrape ? row.last_good_scrape.toISOString() : null,
+    }));
+  } catch (err) {
+    console.warn('[locations] Failed to load active alerts:', err);
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
 // GET /locations
 // List all available locations with pool counts.
 // ---------------------------------------------------------------------------
-router.get('/', (_req: Request, res: Response) => {
-  const result = locations.map((loc) => {
-    const pools = loadPoolsForLocation(loc.id) ?? [];
-    return {
-      id: loc.id,
-      name: loc.name,
-      center: loc.center,
-      poolCount: pools.length,
-    };
-  });
+router.get('/', async (_req: Request, res: Response) => {
+  const result = await Promise.all(
+    locations.map(async (loc) => {
+      const pools = (await loadPoolsForLocation(loc.id)) ?? [];
+      return {
+        id: loc.id,
+        name: loc.name,
+        center: loc.center,
+        poolCount: pools.length,
+      };
+    })
+  );
   res.json(result);
 });
 
 // ---------------------------------------------------------------------------
 // GET /locations/:location/pools
-// Returns all pools in the given location.
+// Returns all pools in the given location, plus any active scrape alerts.
+// Response shape: { pools: Pool[], alerts: ActiveAlert[] }
 // ---------------------------------------------------------------------------
-router.get('/:location/pools', (req: Request, res: Response) => {
+router.get('/:location/pools', async (req: Request, res: Response) => {
   const { location } = req.params;
-  const pools = loadPoolsForLocation(location);
+  const pools = await loadPoolsForLocation(location);
 
   if (pools === null) {
     res.status(404).json({ error: `Location '${location}' not found` });
     return;
   }
 
-  res.json(pools);
+  const alerts = await loadActiveAlertsForLocality(location);
+
+  res.json({ pools, alerts });
 });
 
 // ---------------------------------------------------------------------------
@@ -150,9 +266,9 @@ router.get('/:location/pools', (req: Request, res: Response) => {
 // Returns pools within `radius` miles sorted by distance (ascending).
 // Also supports the frontend's `latitude` / `longitude` param names.
 // ---------------------------------------------------------------------------
-router.get('/:location/pools/nearby', (req: Request, res: Response) => {
+router.get('/:location/pools/nearby', async (req: Request, res: Response) => {
   const { location } = req.params;
-  const pools = loadPoolsForLocation(location);
+  const pools = await loadPoolsForLocation(location);
 
   if (pools === null) {
     res.status(404).json({ error: `Location '${location}' not found` });
@@ -194,9 +310,9 @@ router.get('/:location/pools/nearby', (req: Request, res: Response) => {
 // Case-insensitive search against pool name and address.
 // Optionally sorted by distance if lat/lng are provided.
 // ---------------------------------------------------------------------------
-router.get('/:location/pools/search', (req: Request, res: Response) => {
+router.get('/:location/pools/search', async (req: Request, res: Response) => {
   const { location } = req.params;
-  const pools = loadPoolsForLocation(location);
+  const pools = await loadPoolsForLocation(location);
 
   if (pools === null) {
     res.status(404).json({ error: `Location '${location}' not found` });
@@ -242,9 +358,9 @@ router.get('/:location/pools/search', (req: Request, res: Response) => {
 // GET /locations/:location/pools/availability?day=Monday
 // Returns lane availability by hour (5 AM – 10 PM) across all pools.
 // ---------------------------------------------------------------------------
-router.get('/:location/pools/availability', (req: Request, res: Response) => {
+router.get('/:location/pools/availability', async (req: Request, res: Response) => {
   const { location } = req.params;
-  const pools = loadPoolsForLocation(location);
+  const pools = await loadPoolsForLocation(location);
 
   if (pools === null) {
     res.status(404).json({ error: `Location '${location}' not found` });
@@ -366,7 +482,7 @@ async function runScrape(location: string): Promise<void> {
 
   try {
     const config = locations.find(l => l.id === location);
-    const pools = loadPoolsForLocation(location);
+    const pools = await loadPoolsForLocation(location);
     if (!config || !pools) return;
 
     const scheduleUrls = config.poolScheduleUrls ?? {};
@@ -401,10 +517,12 @@ async function runScrape(location: string): Promise<void> {
 // ---------------------------------------------------------------------------
 // GET /locations/:location/pools/schedule
 // Returns cached 30-min TimeSlot schedule for every pool in the location.
-// First request returns 202 + triggers background scrape.
-// Subsequent requests return instantly from cache (refreshed every 6 hours).
+// If DATABASE_URL is set and DB data is fresh (< 6 hours), serves time_slots
+// directly from the DB without scraping.
+// Otherwise falls back to in-memory scheduleCache; first request returns 202
+// and triggers a background scrape; subsequent requests return from cache.
 // ---------------------------------------------------------------------------
-router.get('/:location/pools/schedule', (req: Request, res: Response) => {
+router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
   const { location } = req.params;
 
   if (!locations.find(l => l.id === location)) {
@@ -412,6 +530,44 @@ router.get('/:location/pools/schedule', (req: Request, res: Response) => {
     return;
   }
 
+  // -------------------------------------------------------------------------
+  // If DATABASE_URL is set, try to serve directly from DB time_slots when fresh
+  // -------------------------------------------------------------------------
+  if (process.env.DATABASE_URL) {
+    const dbPools = await loadPoolsFromDB(location);
+    if (dbPools && dbPools.length > 0) {
+      const hasScheduleData = dbPools.some(p => p.schedule && p.schedule.length > 0);
+      if (hasScheduleData) {
+        // Use the oldest lastUpdated across all pools as the freshness indicator
+        const oldestLastUpdated = dbPools.reduce<string | undefined>((oldest, p) => {
+          if (!p.lastUpdated) return oldest;
+          if (!oldest) return p.lastUpdated;
+          return new Date(p.lastUpdated) < new Date(oldest) ? p.lastUpdated : oldest;
+        }, undefined);
+
+        if (!isDataStale(oldestLastUpdated)) {
+          // Data is fresh — build the schedule response directly from DB and return
+          console.log(`[schedule] Serving fresh DB schedule for '${location}'`);
+          const weekStart = getWeekStart();
+          const pools = dbPools.map(p => ({
+            poolId: p.id,
+            poolName: p.name,
+            slots: (p.schedule ?? []) as TimeSlot[],
+          }));
+          res.json({ location, weekStart, pools });
+          return;
+        }
+
+        // Data exists but is stale — trigger background re-scrape and return
+        // what we have from the in-memory cache (or the DB data as fallback)
+        console.log(`[schedule] DB schedule for '${location}' is stale, triggering re-scrape`);
+      }
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Fall back to in-memory scheduleCache + background scraping
+  // -------------------------------------------------------------------------
   const cached = scheduleCache.get(location);
   const cacheStale = !cached || (Date.now() - cached.cachedAt > CACHE_TTL_MS);
 
@@ -438,9 +594,9 @@ router.get('/:location/pools/schedule', (req: Request, res: Response) => {
 // NOTE: This must be registered AFTER the named sub-routes above so that
 // "nearby", "search", and "availability" are not consumed by :id.
 // ---------------------------------------------------------------------------
-router.get('/:location/pools/:id', (req: Request, res: Response) => {
+router.get('/:location/pools/:id', async (req: Request, res: Response) => {
   const { location, id } = req.params;
-  const pools = loadPoolsForLocation(location);
+  const pools = await loadPoolsForLocation(location);
 
   if (pools === null) {
     res.status(404).json({ error: `Location '${location}' not found` });
