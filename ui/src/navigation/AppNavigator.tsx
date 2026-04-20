@@ -2,8 +2,7 @@ import React from 'react';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View } from 'react-native';
-import MapScreen from '../screens/MapScreen';
+import { Text } from 'react-native';
 import PoolListScreen from '../screens/PoolListScreen';
 import PoolDetailScreen from '../screens/PoolDetailScreen';
 import LaneAvailabilityScreen from '../screens/LaneAvailabilityScreen';
@@ -15,7 +14,6 @@ export type RootStackParamList = {
 };
 
 export type TabParamList = {
-  Map: undefined;
   PoolList: undefined;
   Availability: undefined;
 };
@@ -41,18 +39,10 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Map"
-        component={MapScreen}
-        options={{
-          title: 'Map',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🗺️</Text>,
-        }}
-      />
-      <Tab.Screen
         name="PoolList"
         component={PoolListScreen}
         options={{
-          title: 'Pool List',
+          title: 'Pools',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📋</Text>,
         }}
       />

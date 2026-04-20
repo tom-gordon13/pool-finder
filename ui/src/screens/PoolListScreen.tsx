@@ -14,6 +14,7 @@ import { usePoolStore } from '../store/poolStore';
 import { LapSwimHours, Pool } from '../types/pool';
 import { theme } from '../theme';
 import { GradientBackground } from '../components/GradientBackground';
+import { LocationSelector } from '../components/LocationSelector';
 
 // ---------------------------------------------------------------------------
 // Helpers (Kept from original)
@@ -119,9 +120,6 @@ function PoolCard({ pool, onPress }: PoolCardProps) {
         <Text style={styles.noHoursToday}>No lap swim scheduled today</Text>
       )}
 
-      {pool.distance !== undefined && (
-        <Text style={styles.distance}>{pool.distance.toFixed(1)} mi away</Text>
-      )}
     </TouchableOpacity>
   );
 }
@@ -132,8 +130,8 @@ function PoolCard({ pool, onPress }: PoolCardProps) {
 
 export default function PoolListScreen() {
   const navigation = useNavigation();
-  const { setSelectedPool } = usePoolStore();
-  const { data: pools, isLoading, isError, isFetching } = useAllPools();
+  const { selectedLocation, setSelectedPool } = usePoolStore();
+  const { data: pools, isLoading, isError, isFetching } = useAllPools(selectedLocation);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPools = useMemo(() => {
@@ -170,6 +168,11 @@ export default function PoolListScreen() {
   return (
     <GradientBackground>
       <SafeAreaView style={styles.container}>
+        {/* Location Selector */}
+        <View style={styles.headerContainer}>
+          <LocationSelector />
+        </View>
+
         {/* Search bar */}
         <View style={styles.searchBarContainer}>
           <View style={styles.searchBar}>
@@ -231,9 +234,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
   searchBarContainer: {
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 8,
     paddingBottom: 8,
   },
   searchBar: {

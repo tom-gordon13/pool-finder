@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { Pool, UserLocation } from '../types/pool';
+import { Pool } from '../types/pool';
 
 interface PoolState {
-  // User location
-  userLocation: UserLocation | null;
-  setUserLocation: (location: UserLocation | null) => void;
+  // Selected location (e.g., 'boulder')
+  selectedLocation: string;
+  setSelectedLocation: (location: string) => void;
 
   // Pools data
   pools: Pool[];
@@ -22,10 +22,6 @@ interface PoolState {
   error: string | null;
   setError: (error: string | null) => void;
 
-  // Search radius in miles
-  searchRadius: number;
-  setSearchRadius: (radius: number) => void;
-
   // Filter for open now
   showOpenNow: boolean;
   setShowOpenNow: (show: boolean) => void;
@@ -36,16 +32,15 @@ interface PoolState {
 
 export const usePoolStore = create<PoolState>((set) => ({
   // Initial state
-  userLocation: null,
+  selectedLocation: 'boulder', // Default to Boulder
   pools: [],
   selectedPool: null,
   isLoading: false,
   error: null,
-  searchRadius: 10, // Default 10 miles
   showOpenNow: false,
 
   // Actions
-  setUserLocation: (location) => set({ userLocation: location }),
+  setSelectedLocation: (location) => set({ selectedLocation: location }),
 
   setPools: (pools) => set({ pools }),
 
@@ -64,8 +59,6 @@ export const usePoolStore = create<PoolState>((set) => ({
   setIsLoading: (loading) => set({ isLoading: loading }),
 
   setError: (error) => set({ error }),
-
-  setSearchRadius: (radius) => set({ searchRadius: radius }),
 
   setShowOpenNow: (show) => set({ showOpenNow: show }),
 

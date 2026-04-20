@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { usePoolSchedule } from '../hooks/usePools';
+import { usePoolStore } from '../store/poolStore';
 import { HeatmapGrid } from '../components/HeatmapGrid';
 import { theme } from '../theme';
 
@@ -36,11 +37,12 @@ function getCurrentHour(): number {
 }
 
 export default function LaneAvailabilityScreen() {
+  const { selectedLocation } = usePoolStore();
   const [selectedDayIndex, setSelectedDayIndex] = useState(getTodayIndex);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null);
 
-  const { data, isLoading, error, refetch } = usePoolSchedule('boulder');
+  const { data, isLoading, error, refetch } = usePoolSchedule(selectedLocation);
 
   const selectedDay = DAYS[selectedDayIndex];
 

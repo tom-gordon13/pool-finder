@@ -112,15 +112,15 @@ const MOCK_POOLS: Pool[] = [
 ];
 
 /**
- * Fetch all pools
+ * Fetch all pools for a specific location
  */
-export const fetchAllPools = async (): Promise<Pool[]> => {
+export const fetchAllPools = async (location: string = 'boulder'): Promise<Pool[]> => {
   if (USE_MOCK_DATA) {
     await new Promise(resolve => setTimeout(resolve, 600));
     return MOCK_POOLS;
   }
   try {
-    const response = await api.get('/pools');
+    const response = await api.get(`/locations/${location}/pools`);
     return response.data;
   } catch (error) {
     console.warn('API unreachable, falling back to mock data:', error);

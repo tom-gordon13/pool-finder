@@ -122,11 +122,6 @@ export default function PoolDetailScreen() {
           </View>
           <Text style={styles.poolName}>{selectedPool.name}</Text>
           <Text style={styles.poolAddress}>{selectedPool.address}</Text>
-          {selectedPool.distance !== undefined && (
-            <Text style={styles.poolDistance}>
-              {selectedPool.distance.toFixed(1)} mi from your location
-            </Text>
-          )}
         </View>
 
         {/* ---- Contact info ---- */}

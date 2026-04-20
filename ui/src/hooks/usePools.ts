@@ -10,13 +10,13 @@ import {
 import { LocationAvailability, PoolScheduleResponse } from '../types/pool';
 
 /**
- * Hook to fetch all Boulder pools.
+ * Hook to fetch all pools for a specific location.
  * Falls back to mock data if the API is unreachable (handled inside the service).
  */
-export const useAllPools = () => {
+export const useAllPools = (location: string = 'boulder') => {
   return useQuery({
-    queryKey: ['pools', 'all'],
-    queryFn: fetchAllPools,
+    queryKey: ['pools', 'all', location],
+    queryFn: () => fetchAllPools(location),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1,
   });
