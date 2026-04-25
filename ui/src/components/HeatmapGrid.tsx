@@ -41,6 +41,11 @@ function formatHour(h: number): string {
     return mm === 0 ? `${hh12}` : `${hh12}:${String(mm).padStart(2, '0')}`;
 }
 
+function getPeriod(h: number): string {
+    const hh = Math.floor(h);
+    return hh < 12 ? 'AM' : 'PM';
+}
+
 const getCellColor = (lanes: number) => {
     if (lanes <= 0) return theme.colors.statusClosed;
     if (lanes <= 2) return theme.colors.statusScarce;
@@ -94,6 +99,8 @@ export function HeatmapGrid({
                             {timeSlots.map((slot, colIdx) => {
                                 const isSel = slot === selectedTime;
                                 const isCur = currentHour !== undefined && slot === currentHour;
+                                const period = getPeriod(slot);
+                                const isPM = period === 'PM';
                                 const columnBg = colIdx % 2 === 0
                                     ? 'rgba(255,255,255,0.02)'
                                     : 'rgba(0,0,0,0.02)';
@@ -105,13 +112,22 @@ export function HeatmapGrid({
                                         style={[styles.timeHeaderCell, { backgroundColor: columnBg }]}
                                     >
                                         {isSel && <View style={styles.timeHeaderHighlight} />}
-                                        <Text style={[
-                                            styles.timeHeaderText,
-                                            isSel && styles.timeHeaderTextSelected,
-                                            isCur && styles.timeHeaderTextCurrent,
-                                        ]}>
-                                            {formatHour(slot)}
-                                        </Text>
+                                        <View style={styles.timeHeaderContent}>
+                                            <Text style={[
+                                                styles.timeHeaderText,
+                                                isSel && styles.timeHeaderTextSelected,
+                                                isCur && styles.timeHeaderTextCurrent,
+                                            ]}>
+                                                {formatHour(slot)}
+                                            </Text>
+                                            <Text style={[
+                                                styles.periodText,
+                                                isPM && styles.periodTextPM,
+                                                isSel && styles.periodTextSelected,
+                                            ]}>
+                                                {period}
+                                            </Text>
+                                        </View>
                                         {isCur && !isSel && <View style={styles.currentDot} />}
                                         {isSel && <View style={styles.selectedBar} />}
                                     </TouchableOpacity>
@@ -261,11 +277,14 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
     },
+    timeHeaderContent: {
+        alignItems: 'center',
+        gap: 1,
+    },
     timeHeaderText: {
         fontSize: 12,
         color: theme.colors.textTertiary,
         fontWeight: '500',
-        marginBottom: 4,
     },
     timeHeaderTextSelected: {
         color: '#7ad0f0',
@@ -274,6 +293,18 @@ const styles = StyleSheet.create({
     timeHeaderTextCurrent: {
         color: theme.colors.primary,
         fontWeight: '700',
+    },
+    periodText: {
+        fontSize: 8,
+        color: 'rgba(138, 172, 202, 0.5)',
+        fontWeight: '600',
+        letterSpacing: 0.3,
+    },
+    periodTextPM: {
+        color: 'rgba(255, 179, 102, 0.6)',
+    },
+    periodTextSelected: {
+        color: '#7ad0f0',
     },
     currentDot: {
         width: 4, height: 4, borderRadius: 2, backgroundColor: theme.colors.primary,
