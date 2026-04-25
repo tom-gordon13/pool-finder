@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePoolStore } from '../store/poolStore';
 import {
   fetchAllPools,
@@ -83,7 +84,54 @@ export function useAvailability(location: string = 'boulder', day?: string) {
 export function usePoolSchedule(location: string = 'boulder') {
   return useQuery<PoolScheduleResponse>({
     queryKey: ['poolSchedule', location],
-    queryFn: () => fetchPoolSchedule(location),
+    queryFn: async () => {
+      const CACHE_KEY = `poolSchedule-${location}`;
+      const CACHE_DURATION_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+      try {
+        // Try to load from AsyncStorage first
+        const cachedJson = await AsyncStorage.getItem(CACHE_KEY);
+
+        if (cachedJson) {
+          const { data, timestamp } = JSON.parse(cachedJson);
+          const age = Date.now() - timestamp;
+
+          // If cache is fresh (< 6 hours), return it immediately
+          if (age < CACHE_DURATION_MS) {
+            console.log(`[usePoolSchedule] Using cached schedule (${Math.round(age / 1000 / 60)} minutes old)`);
+            return data as PoolScheduleResponse;
+          }
+
+          console.log(`[usePoolSchedule] Cache expired (${Math.round(age / 1000 / 60 / 60)} hours old), fetching fresh data`);
+        }
+      } catch (err) {
+        console.warn('[usePoolSchedule] Error reading from AsyncStorage:', err);
+      }
+
+      // Fetch fresh data from API
+      const freshData = await fetchPoolSchedule(location);
+
+      // Cache the fresh data in AsyncStorage
+      try {
+        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: freshData,
+          timestamp: Date.now(),
+        }));
+        console.log('[usePoolSchedule] Cached fresh schedule data');
+      } catch (err) {
+        console.warn('[usePoolSchedule] Error writing to AsyncStorage:', err);
+      }
+
+      return freshData;
+    },
     staleTime: 10 * 60 * 1000, // 10 minutes — schedule pages don't change often
+    refetchInterval: (query) => {
+      // If the data is stale and refreshing, poll every 5 seconds to get updated data
+      const data = query.state.data;
+      if (data?._metadata?.stale && data._metadata.isRefreshing) {
+        return 5000; // 5 seconds
+      }
+      return false; // Don't auto-refetch otherwise
+    },
   });
 }

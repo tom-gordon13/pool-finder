@@ -71,4 +71,9 @@ export interface PoolScheduleResponse {
   location: string;
   weekStart: string;
   pools: PoolScheduleEntry[];
+  _metadata?: {
+    stale: boolean;
+    cachedAt: number;
+    isRefreshing?: boolean;
+  };
 }

@@ -545,7 +545,9 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
           return new Date(p.lastUpdated) < new Date(oldest) ? p.lastUpdated : oldest;
         }, undefined);
 
-        if (!isDataStale(oldestLastUpdated)) {
+        const dataIsFresh = !isDataStale(oldestLastUpdated);
+
+        if (dataIsFresh) {
           // Data is fresh — build the schedule response directly from DB and return
           console.log(`[schedule] Serving fresh DB schedule for '${location}'`);
           const weekStart = getWeekStart();
@@ -554,13 +556,43 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
             poolName: p.name,
             slots: (p.schedule ?? []) as TimeSlot[],
           }));
-          res.json({ location, weekStart, pools });
+          res.json({
+            location,
+            weekStart,
+            pools,
+            _metadata: {
+              stale: false,
+              cachedAt: oldestLastUpdated ? new Date(oldestLastUpdated).getTime() : Date.now(),
+              isRefreshing: false,
+            },
+          });
           return;
         }
 
-        // Data exists but is stale — trigger background re-scrape and return
-        // what we have from the in-memory cache (or the DB data as fallback)
+        // Data exists but is stale — trigger background re-scrape and return stale data
         console.log(`[schedule] DB schedule for '${location}' is stale, triggering re-scrape`);
+        if (!scrapeInProgress.has(location)) {
+          runScrape(location);
+        }
+
+        // Return stale DB data with metadata
+        const weekStart = getWeekStart();
+        const pools = dbPools.map(p => ({
+          poolId: p.id,
+          poolName: p.name,
+          slots: (p.schedule ?? []) as TimeSlot[],
+        }));
+        res.json({
+          location,
+          weekStart,
+          pools,
+          _metadata: {
+            stale: true,
+            cachedAt: oldestLastUpdated ? new Date(oldestLastUpdated).getTime() : Date.now(),
+            isRefreshing: scrapeInProgress.has(location),
+          },
+        });
+        return;
       }
     }
   }
@@ -572,7 +604,7 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
   const cacheStale = !cached || (Date.now() - cached.cachedAt > CACHE_TTL_MS);
 
   // Kick off a background refresh if stale (non-blocking)
-  if (cacheStale) {
+  if (cacheStale && !scrapeInProgress.has(location)) {
     runScrape(location);
   }
 
@@ -585,7 +617,15 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
     return;
   }
 
-  res.json(cached);
+  // Return cached data with metadata indicating staleness and refresh status
+  res.json({
+    ...cached,
+    _metadata: {
+      stale: cacheStale,
+      cachedAt: cached.cachedAt,
+      isRefreshing: scrapeInProgress.has(location),
+    },
+  });
 });
 
 // ---------------------------------------------------------------------------

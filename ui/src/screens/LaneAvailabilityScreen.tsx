@@ -103,8 +103,7 @@ export default function LaneAvailabilityScreen() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={styles.loadingText}>Fetching live schedules…</Text>
-        <Text style={styles.loadingSubtext}>This takes ~15s on first load</Text>
+        <Text style={styles.loadingText}>Loading schedules…</Text>
       </View>
     );
   }
@@ -127,6 +126,17 @@ export default function LaneAvailabilityScreen() {
         <Text style={styles.title}>Lane Availability</Text>
         {weekLabel ? <Text style={styles.weekLabel}>{weekLabel}</Text> : null}
       </View>
+
+      {/* Stale data indicator */}
+      {data._metadata?.stale && (
+        <View style={styles.staleDataBanner}>
+          <Text style={styles.staleDataText}>
+            {data._metadata.isRefreshing
+              ? '⟳ Refreshing schedule data...'
+              : '⚠ Showing older schedule data'}
+          </Text>
+        </View>
+      )}
 
       {/* Day picker */}
       <ScrollView
@@ -248,6 +258,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.textSecondary,
     marginTop: 2,
+  },
+  staleDataBanner: {
+    backgroundColor: 'rgba(255, 193, 7, 0.15)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#FFC107',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  staleDataText: {
+    fontSize: 13,
+    color: '#F57C00',
+    fontWeight: '500',
   },
   loadingText: {
     marginTop: 12,
