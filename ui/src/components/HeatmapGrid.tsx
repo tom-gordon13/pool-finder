@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { theme } from '../theme';
 
-const CELL_W = 44;
-const CELL_GAP = 4;
+const CELL_W = 56;
+const CELL_GAP = 8;
 const TIME_HEADER_H = 40;
-const CELL_ROW_H = 48;
+const CELL_ROW_H = 54;
 const NAME_ROW_H = 28;
 
 interface PoolRow {
@@ -64,26 +64,7 @@ export function HeatmapGrid({
     selectedPoolId,
     currentHour,
 }: HeatmapGridProps) {
-    // One ref per scroll view: header + one per pool
-    const headerScrollRef = useRef<ScrollView>(null);
-    const poolScrollRefs = useRef<(ScrollView | null)[]>([]);
-    // Track current scroll X to avoid feedback loops
-    const scrollX = useRef(0);
-    const isSyncing = useRef(false);
-
-    // Scroll all views to x
-    const syncAllTo = useCallback((x: number) => {
-        if (isSyncing.current) return;
-        isSyncing.current = true;
-        scrollX.current = x;
-        headerScrollRef.current?.scrollTo({ x, animated: false });
-        poolScrollRefs.current.forEach(ref => ref?.scrollTo({ x, animated: false }));
-        isSyncing.current = false;
-    }, []);
-
-    const handleScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        syncAllTo(e.nativeEvent.contentOffset.x);
-    }, [syncAllTo]);
+    const scrollViewRef = useRef<ScrollView>(null);
 
     // Scroll to current hour on mount
     useEffect(() => {
@@ -91,150 +72,151 @@ export function HeatmapGrid({
             const idx = timeSlots.findIndex(t => t >= currentHour);
             if (idx !== -1) {
                 const x = Math.max(0, idx * (CELL_W + CELL_GAP) - 80);
-                setTimeout(() => syncAllTo(x), 50);
+                setTimeout(() => {
+                    scrollViewRef.current?.scrollTo({ x, animated: true });
+                }, 50);
             }
         }
-    }, []);
+    }, [currentHour, timeSlots]);
 
     return (
         <View style={styles.outerContainer}>
             <View style={styles.gridContainer}>
-
-                {/* ── Time header row (synced, not user-scrollable) ── */}
                 <ScrollView
-                    ref={headerScrollRef}
+                    ref={scrollViewRef}
                     horizontal
-                    scrollEnabled={false}
                     showsHorizontalScrollIndicator={false}
-                    style={styles.headerScroll}
+                    scrollEventThrottle={16}
                 >
-                    <View style={styles.headerRow}>
-                        {timeSlots.map((slot) => {
-                            const isSel = slot === selectedTime;
-                            const isCur = currentHour !== undefined && slot === currentHour;
+                    <View>
+                        {/* ── Time header row ── */}
+                        <View style={styles.headerRow}>
+                            {timeSlots.map((slot, colIdx) => {
+                                const isSel = slot === selectedTime;
+                                const isCur = currentHour !== undefined && slot === currentHour;
+                                const columnBg = colIdx % 2 === 0
+                                    ? 'rgba(255,255,255,0.02)'
+                                    : 'rgba(0,0,0,0.02)';
+
+                                return (
+                                    <TouchableOpacity
+                                        key={`h-${slot}`}
+                                        onPress={() => onSelectTime(slot)}
+                                        style={[styles.timeHeaderCell, { backgroundColor: columnBg }]}
+                                    >
+                                        {isSel && <View style={styles.timeHeaderHighlight} />}
+                                        <Text style={[
+                                            styles.timeHeaderText,
+                                            isSel && styles.timeHeaderTextSelected,
+                                            isCur && styles.timeHeaderTextCurrent,
+                                        ]}>
+                                            {formatHour(slot)}
+                                        </Text>
+                                        {isCur && !isSel && <View style={styles.currentDot} />}
+                                        {isSel && <View style={styles.selectedBar} />}
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+
+                        {/* ── Per-pool sections ── */}
+                        {pools.map((p, rowIndex) => {
+                            const isActive = selectedPoolId === p.poolId;
+                            const rowBg = rowIndex % 2 === 0
+                                ? 'rgba(255,255,255,0.015)'
+                                : 'rgba(0,0,0,0.005)';
+
+                            const selectedSlot = selectedTime !== null
+                                ? p.slots.find(s => s.time === selectedTime)
+                                : undefined;
+                            const openNow = selectedSlot?.lanes ?? 0;
+                            const nowColor = getCellColor(openNow);
+
                             return (
-                                <TouchableOpacity
-                                    key={`h-${slot}`}
-                                    onPress={() => onSelectTime(slot)}
-                                    style={styles.timeHeaderCell}
+                                <View
+                                    key={`section-${p.poolId}`}
+                                    style={[styles.poolSection, { backgroundColor: isActive ? theme.colors.primaryGlow : rowBg }]}
                                 >
-                                    {isSel && <View style={styles.timeHeaderHighlight} />}
-                                    <Text style={[
-                                        styles.timeHeaderText,
-                                        isSel && styles.timeHeaderTextSelected,
-                                        isCur && styles.timeHeaderTextCurrent,
-                                    ]}>
-                                        {formatHour(slot)}
-                                    </Text>
-                                    {isCur && !isSel && <View style={styles.currentDot} />}
-                                    {isSel && <View style={styles.selectedBar} />}
-                                </TouchableOpacity>
+                                    {/* Pool name row - fixed width matching the scrollable content */}
+                                    <View style={styles.nameRowContainer}>
+                                        <TouchableOpacity
+                                            style={styles.nameRow}
+                                            onPress={() => onSelectPool(p.poolId)}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text
+                                                style={[styles.poolName, isActive && styles.poolNameActive]}
+                                                numberOfLines={1}
+                                            >
+                                                {p.poolName}
+                                            </Text>
+                                            <View style={[styles.statusBadge, { backgroundColor: nowColor.bg }]}>
+                                                <Text style={[styles.statusText, { color: nowColor.text }]}>
+                                                    {getStatusLabel(openNow)}
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    {/* Cell row */}
+                                    <View style={styles.poolRow}>
+                                        {p.slots.map((slotData, colIdx) => {
+                                            const isSel = slotData.time === selectedTime;
+                                            const split = slotData.lanesHalf !== slotData.lanes;
+                                            const cA = getCellColor(slotData.lanes);
+                                            const cB = getCellColor(slotData.lanesHalf);
+                                            const columnBg = colIdx % 2 === 0
+                                                ? 'rgba(255,255,255,0.02)'
+                                                : 'rgba(0,0,0,0.02)';
+
+                                            return (
+                                                <TouchableOpacity
+                                                    key={`c-${p.poolId}-${slotData.time}`}
+                                                    onPress={() => onSelectTime(slotData.time)}
+                                                    style={[styles.cellContainer, { backgroundColor: columnBg }]}
+                                                >
+                                                    {split ? (
+                                                        <View style={[styles.cell, styles.cellSplit, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
+                                                            <View style={[styles.cellHalf, styles.cellHalfLeft, { backgroundColor: cA.bg }]}>
+                                                                <Text style={[styles.cellHalfText, { color: isSel ? cA.text : cA.text + 'bb' }]}>
+                                                                    {slotData.lanes > 0 ? slotData.lanes : '·'}
+                                                                </Text>
+                                                            </View>
+                                                            <View style={[styles.cellHalf, styles.cellHalfRight, { backgroundColor: cB.bg }]}>
+                                                                <Text style={[styles.cellHalfText, { color: isSel ? cB.text : cB.text + 'bb' }]}>
+                                                                    {slotData.lanesHalf > 0 ? slotData.lanesHalf : '·'}
+                                                                </Text>
+                                                            </View>
+                                                            {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
+                                                        </View>
+                                                    ) : (
+                                                        <View style={[
+                                                            styles.cell,
+                                                            {
+                                                                backgroundColor: cA.bg,
+                                                                borderColor: isSel ? cA.text : 'transparent',
+                                                                borderWidth: isSel ? 1 : 0,
+                                                            },
+                                                        ]}>
+                                                            {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
+                                                            <Text style={[
+                                                                styles.cellText,
+                                                                { color: isSel ? cA.text : cA.text + 'aa' },
+                                                                isSel && { fontWeight: '900', fontSize: 18 },
+                                                            ]}>
+                                                                {slotData.lanes > 0 ? slotData.lanes : '·'}
+                                                            </Text>
+                                                        </View>
+                                                    )}
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </View>
+                                </View>
                             );
                         })}
                     </View>
                 </ScrollView>
-
-                {/* ── Per-pool sections: full-width name row + synced cell scroll ── */}
-                {pools.map((p, index) => {
-                    const isActive = selectedPoolId === p.poolId;
-                    const bg = index % 2 === 0
-                        ? 'rgba(255,255,255,0.015)'
-                        : 'rgba(0,0,0,0.005)';
-
-                    const selectedSlot = selectedTime !== null
-                        ? p.slots.find(s => s.time === selectedTime)
-                        : undefined;
-                    const openNow = selectedSlot?.lanes ?? 0;
-                    const nowColor = getCellColor(openNow);
-
-                    return (
-                        <View
-                            key={`section-${p.poolId}`}
-                            style={[styles.poolSection, { backgroundColor: isActive ? theme.colors.primaryGlow : bg }]}
-                        >
-                            {/* Full-width pool name — does not scroll */}
-                            <TouchableOpacity
-                                style={styles.nameRow}
-                                onPress={() => onSelectPool(p.poolId)}
-                                activeOpacity={0.7}
-                            >
-                                <Text
-                                    style={[styles.poolName, isActive && styles.poolNameActive]}
-                                    numberOfLines={1}
-                                >
-                                    {p.poolName}
-                                </Text>
-                                <View style={[styles.statusBadge, { backgroundColor: nowColor.bg }]}>
-                                    <Text style={[styles.statusText, { color: nowColor.text }]}>
-                                        {getStatusLabel(openNow)}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-
-                            {/* Cell scroll — synced with header and all other pools */}
-                            <ScrollView
-                                ref={el => { poolScrollRefs.current[index] = el; }}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                scrollEventThrottle={16}
-                                onScroll={handleScroll}
-                                style={styles.cellRowScroll}
-                            >
-                                <View style={styles.poolRow}>
-                                    {p.slots.map((slotData) => {
-                                        const isSel = slotData.time === selectedTime;
-                                        const split = slotData.lanesHalf !== slotData.lanes;
-                                        const cA = getCellColor(slotData.lanes);
-                                        const cB = getCellColor(slotData.lanesHalf);
-
-                                        return (
-                                            <TouchableOpacity
-                                                key={`c-${p.poolId}-${slotData.time}`}
-                                                onPress={() => onSelectTime(slotData.time)}
-                                                style={styles.cellContainer}
-                                            >
-                                                {split ? (
-                                                    <View style={[styles.cell, styles.cellSplit, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
-                                                        <View style={[styles.cellHalf, styles.cellHalfLeft, { backgroundColor: cA.bg }]}>
-                                                            <Text style={[styles.cellHalfText, { color: isSel ? cA.text : cA.text + 'bb' }]}>
-                                                                {slotData.lanes > 0 ? slotData.lanes : '·'}
-                                                            </Text>
-                                                        </View>
-                                                        <View style={[styles.cellHalf, styles.cellHalfRight, { backgroundColor: cB.bg }]}>
-                                                            <Text style={[styles.cellHalfText, { color: isSel ? cB.text : cB.text + 'bb' }]}>
-                                                                {slotData.lanesHalf > 0 ? slotData.lanesHalf : '·'}
-                                                            </Text>
-                                                        </View>
-                                                        {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
-                                                    </View>
-                                                ) : (
-                                                    <View style={[
-                                                        styles.cell,
-                                                        {
-                                                            backgroundColor: cA.bg,
-                                                            borderColor: isSel ? cA.text : 'transparent',
-                                                            borderWidth: isSel ? 1 : 0,
-                                                        },
-                                                    ]}>
-                                                        {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
-                                                        <Text style={[
-                                                            styles.cellText,
-                                                            { color: isSel ? cA.text : cA.text + 'aa' },
-                                                            isSel && { fontWeight: '900', fontSize: 16 },
-                                                        ]}>
-                                                            {slotData.lanes > 0 ? slotData.lanes : '·'}
-                                                        </Text>
-                                                    </View>
-                                                )}
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                            </ScrollView>
-                        </View>
-                    );
-                })}
-
             </View>
         </View>
     );
@@ -254,15 +236,13 @@ const styles = StyleSheet.create({
     },
 
     // Time header
-    headerScroll: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(255,255,255,0.06)',
-    },
     headerRow: {
         flexDirection: 'row',
         alignItems: 'flex-end',
         height: TIME_HEADER_H,
         paddingBottom: 4,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255,255,255,0.06)',
     },
     timeHeaderCell: {
         width: CELL_W + CELL_GAP,
@@ -282,9 +262,9 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 8,
     },
     timeHeaderText: {
-        fontSize: 10,
+        fontSize: 12,
         color: theme.colors.textTertiary,
-        fontWeight: '400',
+        fontWeight: '500',
         marginBottom: 4,
     },
     timeHeaderTextSelected: {
@@ -307,11 +287,13 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: 'rgba(255,255,255,0.04)',
     },
+    nameRowContainer: {
+        paddingHorizontal: 12,
+    },
     nameRow: {
         height: NAME_ROW_H,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
         gap: 8,
         paddingTop: 6,
     },
@@ -335,9 +317,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         textTransform: 'uppercase',
     },
-    cellRowScroll: {
-        // sized by poolRow content
-    },
     poolRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -353,8 +332,8 @@ const styles = StyleSheet.create({
     },
     cell: {
         width: CELL_W,
-        height: 38,
-        borderRadius: 9,
+        height: 42,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
@@ -369,28 +348,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cellHalfLeft: {
-        borderTopLeftRadius: 9,
-        borderBottomLeftRadius: 9,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
     },
     cellHalfRight: {
-        borderTopRightRadius: 9,
-        borderBottomRightRadius: 9,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
     },
     cellHalfText: {
-        fontSize: 11,
+        fontSize: 13,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
     },
     cellGlow: {
         position: 'absolute',
         width: '100%', height: '100%',
-        borderRadius: 9,
+        borderRadius: 10,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 1,
         shadowRadius: 10,
     },
     cellText: {
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: '700',
         fontVariant: ['tabular-nums'],
     },
