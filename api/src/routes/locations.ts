@@ -474,6 +474,58 @@ function getWeekStart(): string {
   return monday.toISOString().split('T')[0];
 }
 
+/**
+ * Persist scraped schedule data to the database
+ */
+async function persistScheduleToDatabase(
+  location: string,
+  results: { poolId: string; poolName: string; slots: TimeSlot[] }[]
+): Promise<void> {
+  if (!process.env.DATABASE_URL) {
+    console.log('[schedule] DATABASE_URL not set, skipping database persistence');
+    return;
+  }
+
+  try {
+    console.log(`[schedule] Persisting schedule data to database for '${location}'`);
+    const now = new Date();
+
+    for (const result of results) {
+      const { poolId, slots } = result;
+
+      // Update pool's last_scraped timestamp
+      await prisma.pool.update({
+        where: { id: poolId },
+        data: { last_scraped: now },
+      });
+
+      // Delete existing time slots for this pool
+      await prisma.timeSlot.deleteMany({
+        where: { pool_id: poolId },
+      });
+
+      // Insert new time slots
+      if (slots.length > 0) {
+        await prisma.timeSlot.createMany({
+          data: slots.map(slot => ({
+            pool_id: poolId,
+            day_of_week: slot.dayOfWeek,
+            start_hour: slot.startHour,
+            lanes: slot.lanes,
+          })),
+        });
+      }
+
+      console.log(`[schedule] Persisted ${slots.length} time slots for pool '${poolId}'`);
+    }
+
+    console.log(`[schedule] Database persistence complete for '${location}'`);
+  } catch (err) {
+    console.error(`[schedule] Failed to persist to database for '${location}':`, err);
+    // Don't throw - in-memory cache still works even if DB write fails
+  }
+}
+
 async function runScrape(location: string): Promise<void> {
   if (scrapeInProgress.has(location)) return;
   scrapeInProgress.add(location);
@@ -505,8 +557,12 @@ async function runScrape(location: string): Promise<void> {
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
 
+    // Update in-memory cache
     scheduleCache.set(location, { location, weekStart, pools: results, cachedAt: Date.now() });
-    console.log(`[schedule] Cache updated for '${location}'`);
+    console.log(`[schedule] In-memory cache updated for '${location}'`);
+
+    // Persist to database (non-blocking if it fails)
+    await persistScheduleToDatabase(location, results);
   } catch (err) {
     console.error(`[schedule] Background scrape failed for '${location}':`, err);
   } finally {
