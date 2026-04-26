@@ -8,6 +8,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { Pool, LapSwimHours } from '../types/pool';
+import { locations } from '../data/locations';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -345,11 +346,16 @@ async function scrapeLocationPage(
   slug: string,
   fallbackName: string
 ): Promise<Partial<Pool> | null> {
-  const url = `${BASE_URL}${slug}`;
+  // Get the schedule URL from locations config, fall back to location page slug
+  const boulderConfig = locations.find(l => l.id === 'boulder');
+  const scheduleUrl = boulderConfig?.poolScheduleUrls?.[poolId];
+  const url = scheduleUrl || `${BASE_URL}${slug}`;
+
+  console.log(`  [scraper] Using URL: ${url}`);
   const html = await fetchHtml(url);
 
   if (!html) {
-    console.warn(`  [scraper] Could not fetch location page for ${fallbackName}`);
+    console.warn(`  [scraper] Could not fetch ${scheduleUrl ? 'schedule' : 'location'} page for ${fallbackName}`);
     return null;
   }
 
@@ -458,8 +464,16 @@ async function scrapeLocationPage(
     $doc('h2, h3, h4, h5, button').each((_i, el) => {
       const txt = $doc(el).text().trim();
       if (txt.includes('Lap Pool') && txt.includes('Lap Lanes Available')) {
-        const sibling = $doc(el).next();
-        const table = sibling.find('table');
+        // Check for accordion structure first (North/East Boulder)
+        const accordionContent = $doc(el).closest('.c-accordion').find('.c-accordion__content');
+        let table = accordionContent.find('table');
+
+        // Fallback to sibling check for other pool pages
+        if (table.length === 0) {
+          const sibling = $doc(el).next();
+          table = sibling.find('table');
+        }
+
         if (table.length > 0) {
           console.log(`  [scraper] Found schedule table for "${contextName}"`);
 
@@ -484,26 +498,38 @@ async function scrapeLocationPage(
                 let startRaw = match[1].trim();
                 let endRaw = match[2].trim();
 
+                // If start time is missing am/pm, infer it from end time and context
                 if (!/[ap]m/i.test(startRaw)) {
-                  const endMeridiem = endRaw.match(/[ap]m/i)?.[0];
-                  if (endMeridiem) {
-                    startRaw += ` ${endMeridiem}`;
-                  }
-                }
+                  const startHour = parseInt(startRaw.split(':')[0], 10);
+                  const endHour = parseInt(endRaw.split(':')[0], 10);
+                  const endMeridiem = endRaw.match(/[ap]m/i)?.[0].toLowerCase();
 
-                if (!/[ap]m/i.test(match[1])) {
-                  const e = endRaw.toLowerCase();
-                  const sVal = parseInt(match[1], 10);
-                  if (e.includes('am')) {
-                    startRaw = `${match[1]} am`;
-                  } else if (e.includes('pm')) {
-                    const endH = parseInt(endRaw, 10);
-                    if (endH !== 12 && sVal < endH) {
-                      startRaw = `${match[1]} pm`;
-                    } else if (endH === 12 && sVal < 12) {
-                      startRaw = `${match[1]} am`;
+                  if (endMeridiem === 'am') {
+                    // If end is AM, start must be AM
+                    startRaw += ' am';
+                  } else if (endMeridiem === 'pm') {
+                    // If end is PM, determine if start is AM or PM
+                    if (startHour === 12) {
+                      // 12:xx to X pm -> 12:xx pm
+                      startRaw += ' pm';
+                    } else if (startHour < 12 && endHour < 12 && startHour < endHour) {
+                      // Both are afternoon: 1 to 3 pm -> 1 pm to 3 pm
+                      startRaw += ' pm';
+                    } else if (startHour < 12 && endHour === 12) {
+                      // X to 12 pm -> X pm to 12 pm (noon)
+                      startRaw += ' pm';
+                    } else if (startHour >= 6 && startHour < 12) {
+                      // 6-11 without meridiem before pm end likely means morning
+                      // But need to check if it makes sense with end time
+                      if (endHour < startHour && endHour !== 12) {
+                        // Crosses noon: 11 to 1 pm -> 11 am to 1 pm
+                        startRaw += ' am';
+                      } else {
+                        startRaw += ' pm';
+                      }
                     } else {
-                      startRaw = `${match[1]} am`;
+                      // Default to same meridiem as end
+                      startRaw += ' pm';
                     }
                   }
                 }

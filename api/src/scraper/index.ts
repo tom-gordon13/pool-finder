@@ -15,13 +15,14 @@
  * Prisma (if DATABASE_URL is set).
  */
 
+import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { scrapeBoulderPools, getFallbackPools } from './boulderScraper';
 import { Pool } from '../types/pool';
 import { prisma } from '../db/client';
 import { ScraperValidator, ScraperResult } from './ScraperValidator';
-import { sendScraperAlertEmail } from '../alerts';
+import { sendScraperAlertEmail, sendScraperSuccessEmail } from '../alerts';
 
 // ---------------------------------------------------------------------------
 // Output path
@@ -177,6 +178,15 @@ async function savePoolsToDatabase(pools: Pool[]): Promise<void> {
     });
 
     console.log('[db] All pools validated and saved; open alerts resolved.');
+
+    // Send success email with summary
+    const poolsSummary = pools.map(pool => ({
+      poolId: pool.id,
+      poolName: pool.name,
+      lapSwimHoursCount: pool.lapSwimHours.length,
+      timeSlotsCount: pool.schedule?.length ?? 0,
+    }));
+    await sendScraperSuccessEmail('BoulderScraper', 'boulder', poolsSummary);
   } catch (err: unknown) {
     console.error(
       '[db] Error writing to database:',

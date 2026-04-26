@@ -1,1 +1,1 @@
-export { sendScraperAlertEmail } from './AlertMailer';
+export { sendScraperAlertEmail, sendScraperSuccessEmail } from './AlertMailer';

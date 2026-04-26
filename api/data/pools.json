@@ -1,0 +1,1168 @@
+[
+  {
+    "id": "scott-carpenter",
+    "name": "Scott Carpenter Pool Schedule",
+    "address": "1777 Broadway Boulder, CO 80302 Contact",
+    "city": "boulder",
+    "location": {
+      "latitude": 40.0074,
+      "longitude": -105.2519
+    },
+    "website": "https://bouldercolorado.gov/scott-carpenter-pool-schedule",
+    "isPublic": true,
+    "laneCount": 6,
+    "lapSwimHours": [
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "5:30 AM",
+        "closeTime": "8:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "5:30 AM",
+        "closeTime": "8:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "5:30 AM",
+        "closeTime": "8:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "5:30 AM",
+        "closeTime": "8:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "5:30 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "7:00 AM",
+        "closeTime": "5:00 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "9:00 AM",
+        "closeTime": "4:00 PM"
+      }
+    ],
+    "lastUpdated": "2026-04-26T18:11:50.292Z"
+  },
+  {
+    "id": "east-boulder",
+    "name": "East Boulder Community Center Pool Schedule",
+    "address": "1777 Broadway Boulder, CO 80302 Contact",
+    "city": "boulder",
+    "location": {
+      "latitude": 40.0196,
+      "longitude": -105.2185
+    },
+    "website": "https://bouldercolorado.gov/east-boulder-community-center-pool-schedule",
+    "isPublic": true,
+    "laneCount": 8,
+    "lapSwimHours": [
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:30 AM",
+        "closeTime": "8:30 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "9:00 AM",
+        "closeTime": "11:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "8:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "11:30 AM",
+        "closeTime": "12:30 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "10:00 AM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "12:30 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "1:00 PM",
+        "closeTime": "2:15 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "1:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "1:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "2:15 PM",
+        "closeTime": "3:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "3:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:30 AM",
+        "closeTime": "8:30 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "9:00 AM",
+        "closeTime": "11:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "8:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "11:30 AM",
+        "closeTime": "12:30 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "10:00 AM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "12:30 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "12:00 PM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "1:00 PM",
+        "closeTime": "2:15 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "1:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "1:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "2:15 PM",
+        "closeTime": "3:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "3:00 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "3:30 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
+      }
+    ],
+    "lastUpdated": "2026-04-26T18:11:50.847Z"
+  },
+  {
+    "id": "north-boulder",
+    "name": "North Boulder Recreation Pool Schedules",
+    "address": "1777 Broadway Boulder, CO 80302 Contact",
+    "city": "boulder",
+    "location": {
+      "latitude": 40.0469,
+      "longitude": -105.2794
+    },
+    "website": "https://bouldercolorado.gov/north-boulder-recreation-pool-schedules",
+    "isPublic": true,
+    "laneCount": 6,
+    "lapSwimHours": [
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "7:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:30 AM",
+        "closeTime": "8:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "8:30 AM",
+        "closeTime": "9:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "9:30 AM",
+        "closeTime": "10:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "12:30 PM",
+        "closeTime": "2:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "9:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:45 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:00 PM",
+        "closeTime": "7:45 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "10:30 AM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "2:30 PM",
+        "closeTime": "5:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "12:00 PM",
+        "closeTime": "3:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:45 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "1:00 PM",
+        "closeTime": "5:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "12:00 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "3:00 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 AM",
+        "closeTime": "7:30 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:00 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "7:00 AM",
+        "closeTime": "8:00 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "7:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:30 AM",
+        "closeTime": "8:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:30 AM",
+        "closeTime": "9:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:00 AM",
+        "closeTime": "9:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "8:30 AM",
+        "closeTime": "9:30 AM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "9:00 AM",
+        "closeTime": "10:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "9:30 AM",
+        "closeTime": "10:30 AM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "12:30 PM",
+        "closeTime": "2:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "9:30 AM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "10:00 AM",
+        "closeTime": "11:00 AM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:45 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:00 PM",
+        "closeTime": "7:45 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "10:30 AM",
+        "closeTime": "1:00 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "2:30 PM",
+        "closeTime": "5:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "11:00 AM",
+        "closeTime": "12:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "12:00 PM",
+        "closeTime": "3:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:45 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "1:00 PM",
+        "closeTime": "5:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "12:00 PM",
+        "closeTime": "4:30 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "3:00 PM",
+        "closeTime": "6:30 PM"
+      },
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "6:30 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "6:00 PM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:00 PM",
+        "closeTime": "8:30 PM"
+      }
+    ],
+    "lastUpdated": "2026-04-26T18:11:51.384Z"
+  },
+  {
+    "id": "south-boulder",
+    "name": "South Boulder Recreation Center Pool Schedule",
+    "address": "1777 Broadway Boulder, CO 80302 Contact",
+    "city": "boulder",
+    "location": {
+      "latitude": 39.9851,
+      "longitude": -105.2628
+    },
+    "website": "https://bouldercolorado.gov/south-boulder-recreation-center-pool-schedule",
+    "isPublic": true,
+    "laneCount": 8,
+    "lapSwimHours": [
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "5:45 AM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "5:45 AM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "5:45 AM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "5:45 AM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "5:45 AM",
+        "closeTime": "9:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:45 AM",
+        "closeTime": "4:00 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "8:45 AM",
+        "closeTime": "4:00 PM"
+      }
+    ],
+    "lastUpdated": "2026-04-26T18:11:51.945Z"
+  },
+  {
+    "id": "spruce-pool",
+    "name": "Spruce Pool",
+    "address": "Address 2102 Spruce St. Boulder, CO 80302 United States",
+    "city": "boulder",
+    "location": {
+      "latitude": 40.0195,
+      "longitude": -105.2791
+    },
+    "phoneNumber": "Phone 303-441-3426",
+    "website": "https://bouldercolorado.gov/locations/spruce-pool",
+    "isPublic": true,
+    "laneCount": 6,
+    "lapSwimHours": [
+      {
+        "dayOfWeek": "Monday",
+        "openTime": "7:00 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Tuesday",
+        "openTime": "7:00 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Wednesday",
+        "openTime": "7:00 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Thursday",
+        "openTime": "7:00 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Friday",
+        "openTime": "7:00 AM",
+        "closeTime": "7:00 PM"
+      },
+      {
+        "dayOfWeek": "Saturday",
+        "openTime": "8:00 AM",
+        "closeTime": "6:00 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "8:00 AM",
+        "closeTime": "6:00 PM"
+      }
+    ],
+    "lastUpdated": "2026-04-26T18:11:52.532Z"
+  }
+]
