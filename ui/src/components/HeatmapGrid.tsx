@@ -7,6 +7,7 @@ import {
     StyleSheet,
     NativeSyntheticEvent,
     NativeScrollEvent,
+    Dimensions,
 } from 'react-native';
 import { theme } from '../theme';
 
@@ -15,6 +16,7 @@ const CELL_GAP = 8;
 const TIME_HEADER_H = 40;
 const CELL_ROW_H = 54;
 const NAME_ROW_H = 28;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 interface PoolRow {
     poolId: string;
@@ -30,6 +32,7 @@ interface HeatmapGridProps {
     onSelectPool: (poolId: string) => void;
     selectedPoolId: string | null;
     currentHour?: number;
+    viewMode?: 'detailed' | 'compact';
 }
 
 function formatHour(h: number): string {
@@ -68,8 +71,30 @@ export function HeatmapGrid({
     onSelectPool,
     selectedPoolId,
     currentHour,
+    viewMode = 'detailed',
 }: HeatmapGridProps) {
     const scrollViewRef = useRef<ScrollView>(null);
+
+    // Dynamic sizing based on view mode
+    // In compact mode, calculate cell width to fill the screen
+    const gridPadding = 24; // Account for container margins
+    const availableWidth = SCREEN_WIDTH - gridPadding;
+    const totalCells = timeSlots.length;
+
+    let cellWidth: number;
+    let cellGap: number;
+
+    if (viewMode === 'compact') {
+        // Calculate to fill the screen width
+        cellGap = 2;
+        const totalGapWidth = cellGap * (totalCells - 1);
+        cellWidth = (availableWidth - totalGapWidth) / totalCells;
+    } else {
+        cellWidth = CELL_W;
+        cellGap = CELL_GAP;
+    }
+
+    const cellHeight = viewMode === 'compact' ? 32 : 42;
 
     // Calculate exact position of current time indicator
     const getCurrentTimePosition = (): number | null => {
@@ -85,27 +110,27 @@ export function HeatmapGrid({
         const slotDuration = slotEnd - slotStart;
         const progressInSlot = slotDuration > 0 ? (currentHour - slotStart) / slotDuration : 0;
 
-        // Calculate pixel position
-        return slotIdx * (CELL_W + CELL_GAP) + progressInSlot * CELL_W;
+        // Calculate pixel position using dynamic cell width
+        return slotIdx * (cellWidth + cellGap) + progressInSlot * cellWidth;
     };
 
     const currentTimePosition = getCurrentTimePosition();
 
-    // Scroll to current hour on mount
+    // Scroll to current hour on mount (only in detailed mode)
     useEffect(() => {
-        if (currentHour !== undefined) {
+        if (currentHour !== undefined && viewMode === 'detailed') {
             // Find the hour column that contains the current time (rounded down)
             const currentHourFloor = Math.floor(currentHour);
             const idx = timeSlots.findIndex(t => t >= currentHourFloor);
             if (idx !== -1) {
                 // Scroll so current hour is the leftmost visible column
-                const x = idx * (CELL_W + CELL_GAP);
+                const x = idx * (cellWidth + cellGap);
                 setTimeout(() => {
                     scrollViewRef.current?.scrollTo({ x, animated: false });
                 }, 100);
             }
         }
-    }, [currentHour, timeSlots]);
+    }, [currentHour, timeSlots, viewMode, cellWidth, cellGap]);
 
     return (
         <View style={styles.outerContainer}>
@@ -115,8 +140,10 @@ export function HeatmapGrid({
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     scrollEventThrottle={16}
+                    scrollEnabled={viewMode === 'detailed'}
+                    contentContainerStyle={viewMode === 'compact' ? { flex: 1 } : undefined}
                 >
-                    <View>
+                    <View style={viewMode === 'compact' ? { flex: 1 } : undefined}>
                         {/* ── Time header row ── */}
                         <View style={styles.headerRow}>
                             {timeSlots.map((slot, colIdx) => {
@@ -134,7 +161,7 @@ export function HeatmapGrid({
                                         onPress={() => onSelectTime(slot)}
                                         style={[
                                             styles.timeHeaderCell,
-                                            { backgroundColor: columnBg }
+                                            { backgroundColor: columnBg, width: cellWidth + cellGap }
                                         ]}
                                     >
                                         {isSel && <View style={styles.timeHeaderHighlight} />}
@@ -143,19 +170,22 @@ export function HeatmapGrid({
                                                 styles.timeHeaderText,
                                                 isSel && styles.timeHeaderTextSelected,
                                                 isCur && styles.timeHeaderTextCurrent,
+                                                viewMode === 'compact' && styles.timeHeaderTextCompact,
                                             ]}>
                                                 {formatHour(slot)}
                                             </Text>
-                                            <Text style={[
-                                                styles.periodText,
-                                                isPM && styles.periodTextPM,
-                                                isSel && styles.periodTextSelected,
-                                            ]}>
-                                                {period}
-                                            </Text>
+                                            {viewMode === 'detailed' && (
+                                                <Text style={[
+                                                    styles.periodText,
+                                                    isPM && styles.periodTextPM,
+                                                    isSel && styles.periodTextSelected,
+                                                ]}>
+                                                    {period}
+                                                </Text>
+                                            )}
                                         </View>
-                                        {isCur && !isSel && <View style={styles.currentDot} />}
-                                        {isSel && <View style={styles.selectedBar} />}
+                                        {viewMode === 'detailed' && isCur && !isSel && <View style={styles.currentDot} />}
+                                        {viewMode === 'detailed' && isSel && <View style={styles.selectedBar} />}
                                     </TouchableOpacity>
                                 );
                             })}
@@ -225,11 +255,11 @@ export function HeatmapGrid({
                                                     onPress={() => onSelectTime(slotData.time)}
                                                     style={[
                                                         styles.cellContainer,
-                                                        { backgroundColor: columnBg }
+                                                        { backgroundColor: columnBg, width: cellWidth + cellGap }
                                                     ]}
                                                 >
-                                                    {split ? (
-                                                        <View style={[styles.cell, styles.cellSplit, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
+                                                    {split && viewMode === 'detailed' ? (
+                                                        <View style={[styles.cell, styles.cellSplit, { width: cellWidth, height: cellHeight }, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
                                                             <View style={[styles.cellHalf, styles.cellHalfLeft, { backgroundColor: cA.bg }]}>
                                                                 <Text style={[styles.cellHalfText, { color: isSel ? cA.text : cA.text + 'bb' }]}>
                                                                     {slotData.lanes > 0 ? slotData.lanes : '·'}
@@ -246,19 +276,23 @@ export function HeatmapGrid({
                                                         <View style={[
                                                             styles.cell,
                                                             {
+                                                                width: cellWidth,
+                                                                height: cellHeight,
                                                                 backgroundColor: cA.bg,
-                                                                borderColor: isSel ? cA.text : 'transparent',
-                                                                borderWidth: isSel ? 1 : 0,
+                                                                borderColor: isSel && viewMode === 'detailed' ? cA.text : 'transparent',
+                                                                borderWidth: isSel && viewMode === 'detailed' ? 1 : 0,
                                                             },
                                                         ]}>
-                                                            {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
-                                                            <Text style={[
-                                                                styles.cellText,
-                                                                { color: isSel ? cA.text : cA.text + 'aa' },
-                                                                isSel && { fontWeight: '900', fontSize: 18 },
-                                                            ]}>
-                                                                {slotData.lanes > 0 ? slotData.lanes : '·'}
-                                                            </Text>
+                                                            {isSel && viewMode === 'detailed' && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
+                                                            {viewMode === 'detailed' && (
+                                                                <Text style={[
+                                                                    styles.cellText,
+                                                                    { color: isSel ? cA.text : cA.text + 'aa' },
+                                                                    isSel && { fontWeight: '900', fontSize: 18 },
+                                                                ]}>
+                                                                    {slotData.lanes > 0 ? slotData.lanes : '·'}
+                                                                </Text>
+                                                            )}
                                                         </View>
                                                     )}
                                                 </TouchableOpacity>
@@ -330,6 +364,10 @@ const styles = StyleSheet.create({
     timeHeaderTextCurrent: {
         color: theme.colors.primary,
         fontWeight: '700',
+    },
+    timeHeaderTextCompact: {
+        fontSize: 8,
+        fontWeight: '600',
     },
     periodText: {
         fontSize: 8,
@@ -412,9 +450,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cell: {
-        width: CELL_W,
-        height: 42,
-        borderRadius: 10,
+        borderRadius: 6,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',

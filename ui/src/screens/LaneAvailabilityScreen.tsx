@@ -39,10 +39,12 @@ function getCurrentHour(): number {
 }
 
 type ViewMode = 'now' | 'lanes';
+type LaneViewMode = 'detailed' | 'compact';
 
 export default function LaneAvailabilityScreen() {
   const { selectedLocation } = usePoolStore();
   const [viewMode, setViewMode] = useState<ViewMode>('now');
+  const [laneViewMode, setLaneViewMode] = useState<LaneViewMode>('detailed');
   const [selectedDayIndex, setSelectedDayIndex] = useState(getTodayIndex);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null);
@@ -163,37 +165,75 @@ export default function LaneAvailabilityScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Day picker - only show for lanes view */}
+      {/* Day picker and view toggle - only show for lanes view */}
       {viewMode === 'lanes' && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.dayPickerScroll}
-          contentContainerStyle={styles.dayPickerContent}
-        >
-          {DAYS.map((day, i) => {
-            const isToday = i === getTodayIndex();
-            const isSelected = i === selectedDayIndex;
-            return (
-              <TouchableOpacity
-                key={day}
+        <>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.dayPickerScroll}
+            contentContainerStyle={styles.dayPickerContent}
+          >
+            {DAYS.map((day, i) => {
+              const isToday = i === getTodayIndex();
+              const isSelected = i === selectedDayIndex;
+              return (
+                <TouchableOpacity
+                  key={day}
+                  style={[
+                    styles.dayChip,
+                    isSelected && styles.dayChipSelected,
+                    isToday && !isSelected && styles.dayChipToday,
+                  ]}
+                  onPress={() => {
+                    setSelectedDayIndex(i);
+                    setSelectedTime(null);
+                  }}
+                >
+                  <Text style={[styles.dayChipText, isSelected && styles.dayChipTextSelected]}>
+                    {DAY_ABBREV[i]}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+
+          {/* Lane view toggle */}
+          <View style={styles.laneViewToggle}>
+            <TouchableOpacity
+              style={[
+                styles.laneViewToggleButton,
+                laneViewMode === 'detailed' && styles.laneViewToggleButtonActive,
+              ]}
+              onPress={() => setLaneViewMode('detailed')}
+            >
+              <Text
                 style={[
-                  styles.dayChip,
-                  isSelected && styles.dayChipSelected,
-                  isToday && !isSelected && styles.dayChipToday,
+                  styles.laneViewToggleText,
+                  laneViewMode === 'detailed' && styles.laneViewToggleTextActive,
                 ]}
-                onPress={() => {
-                  setSelectedDayIndex(i);
-                  setSelectedTime(null);
-                }}
               >
-                <Text style={[styles.dayChipText, isSelected && styles.dayChipTextSelected]}>
-                  {DAY_ABBREV[i]}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+                Detailed
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.laneViewToggleButton,
+                laneViewMode === 'compact' && styles.laneViewToggleButtonActive,
+              ]}
+              onPress={() => setLaneViewMode('compact')}
+            >
+              <Text
+                style={[
+                  styles.laneViewToggleText,
+                  laneViewMode === 'compact' && styles.laneViewToggleTextActive,
+                ]}
+              >
+                Overview
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
       )}
 
       {/* Now view */}
@@ -217,11 +257,12 @@ export default function LaneAvailabilityScreen() {
               onSelectPool={handleSelectPool}
               selectedPoolId={selectedPoolId}
               currentHour={getTodayIndex() === selectedDayIndex ? getCurrentHour() : undefined}
+              viewMode={laneViewMode}
             />
           )}
 
-          {/* Detail card for selected pool + time */}
-          {selectedPoolEntry && selectedTime !== null && (
+          {/* Detail card for selected pool + time - only in detailed mode */}
+          {laneViewMode === 'detailed' && selectedPoolEntry && selectedTime !== null && (
         <View style={styles.detailCard}>
           <Text style={styles.detailTitle}>{selectedPoolEntry.poolName}</Text>
           <Text style={styles.detailTime}>
@@ -446,6 +487,33 @@ const styles = StyleSheet.create({
   },
   viewModeTabTextSelected: {
     color: '#fff',
+    fontWeight: '700',
+  },
+  laneViewToggle: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: theme.colors.cardBackground,
+    borderRadius: 8,
+    padding: 3,
+    gap: 3,
+  },
+  laneViewToggleButton: {
+    flex: 1,
+    paddingVertical: 6,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  laneViewToggleButtonActive: {
+    backgroundColor: 'rgba(64,168,208,0.15)',
+  },
+  laneViewToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
+  },
+  laneViewToggleTextActive: {
+    color: theme.colors.primary,
     fontWeight: '700',
   },
 });
