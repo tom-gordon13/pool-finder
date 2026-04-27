@@ -1,49 +1,49 @@
 export const theme = {
   colors: {
     // Backgrounds
-    background: '#060c16',
-    backgroundGradientStart: '#060c16',
-    backgroundGradientMid: '#0a1222',
-    backgroundGradientEnd: '#080e1a',
-    
+    background: '#0c1015',
+    backgroundGradientStart: '#0c1015',
+    backgroundGradientMid: '#0e1218',
+    backgroundGradientEnd: '#0d1116',
+
     // UI Elements
-    cardBackground: 'rgba(255,255,255,0.02)',
-    cardBorder: 'rgba(255,255,255,0.04)',
-    
+    cardBackground: 'rgba(255,255,255,0.035)',
+    cardBorder: 'rgba(255,255,255,0.05)',
+
     // Text
-    textPrimary: '#c0d8e8',
-    textSecondary: '#3a6080',
-    textTertiary: '#2e4e65',
-    
+    textPrimary: '#eef0f3',
+    textSecondary: '#8a929e',
+    textTertiary: '#6b727c',
+
     // Accents
-    primary: '#40a8d0',
-    primaryGlow: 'rgba(64,168,208,0.08)',
-    primaryBorder: 'rgba(64,168,208,0.15)',
-    
-    // Status
+    primary: '#5DCAA5',
+    primaryGlow: 'rgba(93,202,165,0.1)',
+    primaryBorder: 'rgba(93,202,165,0.2)',
+
+    // Status - Firmer, more solid colors from UI concepts
     statusOpen: {
-      bg: 'rgba(55,195,140,0.14)',
-      text: '#3cc890',
-      glow: 'rgba(55,195,140,0.08)',
+      bg: '#1D9E75',
+      text: '#eef0f3',
+      glow: '#1D9E75',
     },
     statusLimited: {
-      bg: 'rgba(170,185,55,0.10)',
-      text: '#a0ac40',
-      glow: 'rgba(170,185,55,0.05)',
+      bg: '#5DCAA5',
+      text: '#0c1015',
+      glow: '#5DCAA5',
     },
     statusScarce: {
-      bg: 'rgba(210,145,60,0.12)',
-      text: '#d09540',
-      glow: 'rgba(210,145,60,0.06)',
+      bg: '#EF9F27',
+      text: '#0c1015',
+      glow: '#EF9F27',
     },
     statusFull: {
-      bg: 'rgba(200,55,75,0.14)',
-      text: '#d04a60',
-      glow: 'rgba(200,55,75,0.08)',
+      bg: '#D85A30',
+      text: '#eef0f3',
+      glow: '#D85A30',
     },
     statusClosed: {
-      bg: 'rgba(25,30,40,0.4)',
-      text: '#222e3a',
+      bg: 'rgba(255,255,255,0.07)',
+      text: '#6b727c',
       glow: 'transparent',
     },
   },

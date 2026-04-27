@@ -86,7 +86,7 @@ export function HeatmapGrid({
 
     if (viewMode === 'compact') {
         // Calculate to fill the screen width
-        cellGap = 2;
+        cellGap = 1;
         const totalGapWidth = cellGap * (totalCells - 1);
         cellWidth = (availableWidth - totalGapWidth) / totalCells;
     } else {
@@ -151,9 +151,7 @@ export function HeatmapGrid({
                                 const isCur = currentHour !== undefined && slot === currentHour;
                                 const period = getPeriod(slot);
                                 const isPM = period === 'PM';
-                                const columnBg = colIdx % 2 === 0
-                                    ? 'rgba(255,255,255,0.02)'
-                                    : 'rgba(0,0,0,0.02)';
+                                const columnBg = 'transparent';
 
                                 return (
                                     <TouchableOpacity
@@ -194,9 +192,7 @@ export function HeatmapGrid({
                         {/* ── Per-pool sections ── */}
                         {pools.map((p, rowIndex) => {
                             const isActive = selectedPoolId === p.poolId;
-                            const rowBg = rowIndex % 2 === 0
-                                ? 'rgba(255,255,255,0.015)'
-                                : 'rgba(0,0,0,0.005)';
+                            const rowBg = 'transparent';
 
                             const selectedSlot = selectedTime !== null
                                 ? p.slots.find(s => s.time === selectedTime)
@@ -207,7 +203,7 @@ export function HeatmapGrid({
                             return (
                                 <View
                                     key={`section-${p.poolId}`}
-                                    style={[styles.poolSection, { backgroundColor: isActive ? theme.colors.primaryGlow : rowBg }]}
+                                    style={[styles.poolSection, { backgroundColor: rowBg }]}
                                 >
                                     {/* Pool name row - fixed width matching the scrollable content */}
                                     <View style={styles.nameRowContainer}>
@@ -245,9 +241,7 @@ export function HeatmapGrid({
                                             const split = slotData.lanesHalf !== slotData.lanes;
                                             const cA = getCellColor(slotData.lanes);
                                             const cB = getCellColor(slotData.lanesHalf);
-                                            const columnBg = colIdx % 2 === 0
-                                                ? 'rgba(255,255,255,0.02)'
-                                                : 'rgba(0,0,0,0.02)';
+                                            const columnBg = 'transparent';
 
                                             return (
                                                 <TouchableOpacity
@@ -259,18 +253,17 @@ export function HeatmapGrid({
                                                     ]}
                                                 >
                                                     {split && viewMode === 'detailed' ? (
-                                                        <View style={[styles.cell, styles.cellSplit, { width: cellWidth, height: cellHeight }, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
+                                                        <View style={[styles.cell, styles.cellSplit, { width: cellWidth, height: cellHeight }, isSel && { borderColor: '#fff', borderWidth: 2 }]}>
                                                             <View style={[styles.cellHalf, styles.cellHalfLeft, { backgroundColor: cA.bg }]}>
-                                                                <Text style={[styles.cellHalfText, { color: isSel ? cA.text : cA.text + 'bb' }]}>
+                                                                <Text style={[styles.cellHalfText, { color: cA.text }]}>
                                                                     {slotData.lanes > 0 ? slotData.lanes : '·'}
                                                                 </Text>
                                                             </View>
                                                             <View style={[styles.cellHalf, styles.cellHalfRight, { backgroundColor: cB.bg }]}>
-                                                                <Text style={[styles.cellHalfText, { color: isSel ? cB.text : cB.text + 'bb' }]}>
+                                                                <Text style={[styles.cellHalfText, { color: cB.text }]}>
                                                                     {slotData.lanesHalf > 0 ? slotData.lanesHalf : '·'}
                                                                 </Text>
                                                             </View>
-                                                            {isSel && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
                                                         </View>
                                                     ) : (
                                                         <View style={[
@@ -279,15 +272,14 @@ export function HeatmapGrid({
                                                                 width: cellWidth,
                                                                 height: cellHeight,
                                                                 backgroundColor: cA.bg,
-                                                                borderColor: isSel && viewMode === 'detailed' ? cA.text : 'transparent',
-                                                                borderWidth: isSel && viewMode === 'detailed' ? 1 : 0,
+                                                                borderColor: isSel && viewMode === 'detailed' ? '#fff' : 'transparent',
+                                                                borderWidth: isSel && viewMode === 'detailed' ? 2 : 0,
                                                             },
                                                         ]}>
-                                                            {isSel && viewMode === 'detailed' && <View style={[styles.cellGlow, { shadowColor: cA.glow }]} />}
                                                             {viewMode === 'detailed' && (
                                                                 <Text style={[
                                                                     styles.cellText,
-                                                                    { color: isSel ? cA.text : cA.text + 'aa' },
+                                                                    { color: cA.text },
                                                                     isSel && { fontWeight: '900', fontSize: 18 },
                                                                 ]}>
                                                                     {slotData.lanes > 0 ? slotData.lanes : '·'}
@@ -450,7 +442,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cell: {
-        borderRadius: 6,
+        borderRadius: 5,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
