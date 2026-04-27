@@ -8,7 +8,9 @@ import {
     NativeSyntheticEvent,
     NativeScrollEvent,
     Dimensions,
+    Linking,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { theme } from '../theme';
 
 const CELL_W = 56;
@@ -21,6 +23,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 interface PoolRow {
     poolId: string;
     poolName: string;
+    website?: string;
     slots: { time: number; lanes: number; lanesHalf: number }[];
 }
 
@@ -214,12 +217,26 @@ export function HeatmapGrid({
                                             onPress={() => onSelectPool(p.poolId)}
                                             activeOpacity={0.7}
                                         >
-                                            <Text
-                                                style={[styles.poolName, isActive && styles.poolNameActive]}
-                                                numberOfLines={1}
-                                            >
-                                                {p.poolName}
-                                            </Text>
+                                            <View style={styles.poolNameContainer}>
+                                                <Text
+                                                    style={[styles.poolName, isActive && styles.poolNameActive]}
+                                                    numberOfLines={1}
+                                                >
+                                                    {p.poolName}
+                                                </Text>
+                                                {p.website && (
+                                                    <TouchableOpacity
+                                                        onPress={(e) => {
+                                                            e.stopPropagation();
+                                                            Linking.openURL(p.website!);
+                                                        }}
+                                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                                        style={styles.linkIcon}
+                                                    >
+                                                        <MaterialIcons name="open-in-new" size={14} color="#6b8ca8" />
+                                                    </TouchableOpacity>
+                                                )}
+                                            </View>
                                             <View style={[styles.statusBadge, { backgroundColor: nowColor.bg }]}>
                                                 <Text style={[styles.statusText, { color: nowColor.text }]}>
                                                     {getStatusLabel(openNow)}
@@ -410,14 +427,23 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingTop: 6,
     },
-    poolName: {
+    poolNameContainer: {
         flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    poolName: {
         fontSize: 13,
         fontWeight: '700',
         color: '#8aacca',
+        flexShrink: 1,
     },
     poolNameActive: {
         color: '#b0d8f0',
+    },
+    linkIcon: {
+        padding: 2,
     },
     statusBadge: {
         paddingHorizontal: 6,
