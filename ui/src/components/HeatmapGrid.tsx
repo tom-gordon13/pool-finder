@@ -207,25 +207,9 @@ export function HeatmapGrid({
                                     key={`section-${p.poolId}`}
                                     style={[styles.poolSection, { backgroundColor: rowBg }]}
                                 >
-                                    {/* Pool name row - fixed width matching the scrollable content */}
+                                    {/* Pool name row - placeholder to maintain spacing */}
                                     <View style={styles.nameRowContainer}>
-                                        <TouchableOpacity
-                                            style={styles.nameRow}
-                                            onPress={() => onSelectPool(p.poolId)}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text
-                                                style={[styles.poolName, isActive && styles.poolNameActive]}
-                                                numberOfLines={1}
-                                            >
-                                                {p.poolName}
-                                            </Text>
-                                            <View style={[styles.statusBadge, { backgroundColor: nowColor.bg }]}>
-                                                <Text style={[styles.statusText, { color: nowColor.text }]}>
-                                                    {getStatusLabel(openNow)}
-                                                </Text>
-                                            </View>
-                                        </TouchableOpacity>
+                                        <View style={styles.nameRow} />
                                     </View>
 
                                     {/* Cell row */}
@@ -298,6 +282,50 @@ export function HeatmapGrid({
                         })}
                     </View>
                 </ScrollView>
+
+                {/* Overlaid pool names - positioned absolutely to stay fixed */}
+                {pools.map((p, rowIndex) => {
+                    const isActive = selectedPoolId === p.poolId;
+                    const selectedSlot = selectedTime !== null
+                        ? p.slots.find(s => s.time === selectedTime)
+                        : undefined;
+                    const openNow = selectedSlot?.lanes ?? 0;
+                    const nowColor = getCellColor(openNow);
+
+                    // Calculate vertical position
+                    // Each section = border(1) + nameRow(28) + margin(8) + cellRow(54)
+                    const sectionHeight = 1 + NAME_ROW_H + 8 + CELL_ROW_H;
+                    // Position after header, accounting for cumulative section heights
+                    const topPosition = TIME_HEADER_H + (rowIndex * sectionHeight);
+
+                    return (
+                        <View
+                            key={`overlay-${p.poolId}`}
+                            style={[
+                                styles.poolNameOverlay,
+                                { top: topPosition }
+                            ]}
+                        >
+                            <TouchableOpacity
+                                style={styles.nameRow}
+                                onPress={() => onSelectPool(p.poolId)}
+                                activeOpacity={0.7}
+                            >
+                                <Text
+                                    style={[styles.poolName, isActive && styles.poolNameActive]}
+                                    numberOfLines={1}
+                                >
+                                    {p.poolName}
+                                </Text>
+                                <View style={[styles.statusBadge, { backgroundColor: nowColor.bg }]}>
+                                    <Text style={[styles.statusText, { color: nowColor.text }]}>
+                                        {getStatusLabel(openNow)}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    );
+                })}
             </View>
         </View>
     );
@@ -402,6 +430,15 @@ const styles = StyleSheet.create({
     },
     nameRowContainer: {
         paddingHorizontal: 12,
+        marginBottom: 8,
+    },
+    poolNameOverlay: {
+        position: 'absolute',
+        left: 0,
+        height: NAME_ROW_H + 8, // Include the marginBottom from nameRowContainer
+        paddingHorizontal: 12,
+        backgroundColor: theme.colors.background,
+        zIndex: 10,
     },
     nameRow: {
         height: NAME_ROW_H,
