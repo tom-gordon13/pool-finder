@@ -67,7 +67,6 @@ export default function LaneAvailabilityScreen() {
         return {
           poolId: pool.poolId,
           poolName: pool.poolName,
-          website: pool.website,
           slots: TIME_SLOTS.map(t => ({
             time: t,
             lanes: slotMap.get(t) ?? 0,

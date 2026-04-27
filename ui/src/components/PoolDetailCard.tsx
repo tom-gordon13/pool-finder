@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { theme } from '../theme';
 
 interface PoolDetailCardProps {
@@ -33,18 +32,7 @@ export function PoolDetailCard({ pool, selectedTime }: PoolDetailCardProps) {
         <View style={styles.container}>
             <View style={styles.header}>
                 <View>
-                    <View style={styles.titleRow}>
-                        <Text style={styles.title}>{pool.name}</Text>
-                        {pool.website && (
-                            <TouchableOpacity
-                                onPress={() => Linking.openURL(pool.website)}
-                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                                style={styles.linkIcon}
-                            >
-                                <MaterialIcons name="open-in-new" size={16} color="#6b8ca8" />
-                            </TouchableOpacity>
-                        )}
-                    </View>
+                    <Text style={styles.title}>{pool.name}</Text>
                     <Text style={styles.subtitle}>
                         {pool.distance} · {pool.length} · {pool.totalLanes} lanes
                     </Text>
@@ -112,18 +100,10 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         marginBottom: 16,
     },
-    titleRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-    },
     title: {
         fontSize: 19,
         fontWeight: '800',
         color: theme.colors.textPrimary,
-    },
-    linkIcon: {
-        padding: 2,
     },
     subtitle: {
         fontSize: 12,

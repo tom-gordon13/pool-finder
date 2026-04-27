@@ -456,7 +456,7 @@ router.get('/:location/pools/availability', async (req: Request, res: Response) 
 interface ScheduleCache {
   location: string;
   weekStart: string;
-  pools: { poolId: string; poolName: string; website?: string; slots: TimeSlot[] }[];
+  pools: { poolId: string; poolName: string; slots: TimeSlot[] }[];
   cachedAt: number; // Date.now()
 }
 
@@ -479,7 +479,7 @@ function getWeekStart(): string {
  */
 async function persistScheduleToDatabase(
   location: string,
-  results: { poolId: string; poolName: string; website?: string; slots: TimeSlot[] }[]
+  results: { poolId: string; poolName: string; slots: TimeSlot[] }[]
 ): Promise<void> {
   if (!process.env.DATABASE_URL) {
     console.log('[schedule] DATABASE_URL not set, skipping database persistence');
@@ -542,17 +542,17 @@ async function runScrape(location: string): Promise<void> {
 
     // Sequential scraping with a small delay between requests to avoid
     // rate-limiting from bouldercolorado.gov
-    const results: { poolId: string; poolName: string; website?: string; slots: TimeSlot[] }[] = [];
+    const results: { poolId: string; poolName: string; slots: TimeSlot[] }[] = [];
     for (const pool of pools) {
       const url = scheduleUrls[pool.id];
       if (!url) {
-        results.push({ poolId: pool.id, poolName: pool.name, website: pool.website, slots: [] });
+        results.push({ poolId: pool.id, poolName: pool.name, slots: [] });
         continue;
       }
       console.log(`[schedule] Scraping '${pool.name}'`);
       const slots = await scrapePoolSchedule(url);
       console.log(`[schedule] '${pool.name}': ${slots.length} slots`);
-      results.push({ poolId: pool.id, poolName: pool.name, website: pool.website, slots });
+      results.push({ poolId: pool.id, poolName: pool.name, slots });
       // Delay between requests to avoid rate-limiting
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
@@ -610,7 +610,6 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
           const pools = dbPools.map(p => ({
             poolId: p.id,
             poolName: p.name,
-            website: p.website,
             slots: (p.schedule ?? []) as TimeSlot[],
           }));
           res.json({
@@ -637,7 +636,6 @@ router.get('/:location/pools/schedule', async (req: Request, res: Response) => {
         const pools = dbPools.map(p => ({
           poolId: p.id,
           poolName: p.name,
-          website: p.website,
           slots: (p.schedule ?? []) as TimeSlot[],
         }));
         res.json({
