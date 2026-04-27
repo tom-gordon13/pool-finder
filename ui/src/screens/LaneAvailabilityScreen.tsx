@@ -33,7 +33,8 @@ function getTodayIndex(): number {
 }
 
 function getCurrentHour(): number {
-  return new Date().getHours();
+  const now = new Date();
+  return now.getHours() + now.getMinutes() / 60;
 }
 
 export default function LaneAvailabilityScreen() {

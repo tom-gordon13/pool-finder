@@ -71,15 +71,38 @@ export function HeatmapGrid({
 }: HeatmapGridProps) {
     const scrollViewRef = useRef<ScrollView>(null);
 
+    // Calculate exact position of current time indicator
+    const getCurrentTimePosition = (): number | null => {
+        if (currentHour === undefined || timeSlots.length === 0) return null;
+
+        // Find the index of the time slot that contains or is just before current time
+        const idx = timeSlots.findIndex(t => t > currentHour);
+        const slotIdx = idx === -1 ? timeSlots.length - 1 : Math.max(0, idx - 1);
+
+        // Calculate fraction of progress through the current hour slot
+        const slotStart = timeSlots[slotIdx];
+        const slotEnd = idx === -1 ? slotStart + 0.5 : timeSlots[idx];
+        const slotDuration = slotEnd - slotStart;
+        const progressInSlot = slotDuration > 0 ? (currentHour - slotStart) / slotDuration : 0;
+
+        // Calculate pixel position
+        return slotIdx * (CELL_W + CELL_GAP) + progressInSlot * CELL_W;
+    };
+
+    const currentTimePosition = getCurrentTimePosition();
+
     // Scroll to current hour on mount
     useEffect(() => {
         if (currentHour !== undefined) {
-            const idx = timeSlots.findIndex(t => t >= currentHour);
+            // Find the hour column that contains the current time (rounded down)
+            const currentHourFloor = Math.floor(currentHour);
+            const idx = timeSlots.findIndex(t => t >= currentHourFloor);
             if (idx !== -1) {
-                const x = Math.max(0, idx * (CELL_W + CELL_GAP) - 80);
+                // Scroll so current hour is the leftmost visible column
+                const x = idx * (CELL_W + CELL_GAP);
                 setTimeout(() => {
-                    scrollViewRef.current?.scrollTo({ x, animated: true });
-                }, 50);
+                    scrollViewRef.current?.scrollTo({ x, animated: false });
+                }, 100);
             }
         }
     }, [currentHour, timeSlots]);
@@ -109,7 +132,10 @@ export function HeatmapGrid({
                                     <TouchableOpacity
                                         key={`h-${slot}`}
                                         onPress={() => onSelectTime(slot)}
-                                        style={[styles.timeHeaderCell, { backgroundColor: columnBg }]}
+                                        style={[
+                                            styles.timeHeaderCell,
+                                            { backgroundColor: columnBg }
+                                        ]}
                                     >
                                         {isSel && <View style={styles.timeHeaderHighlight} />}
                                         <View style={styles.timeHeaderContent}>
@@ -134,6 +160,14 @@ export function HeatmapGrid({
                                 );
                             })}
                         </View>
+
+                        {/* Current time indicator line - positioned to only show over pool cells */}
+                        {currentTimePosition !== null && (
+                            <View style={[
+                                styles.currentTimeIndicatorLine,
+                                { left: currentTimePosition, top: TIME_HEADER_H }
+                            ]} />
+                        )}
 
                         {/* ── Per-pool sections ── */}
                         {pools.map((p, rowIndex) => {
@@ -178,6 +212,7 @@ export function HeatmapGrid({
                                     <View style={styles.poolRow}>
                                         {p.slots.map((slotData, colIdx) => {
                                             const isSel = slotData.time === selectedTime;
+                                            const isCur = currentHour !== undefined && slotData.time === currentHour;
                                             const split = slotData.lanesHalf !== slotData.lanes;
                                             const cA = getCellColor(slotData.lanes);
                                             const cB = getCellColor(slotData.lanesHalf);
@@ -189,7 +224,10 @@ export function HeatmapGrid({
                                                 <TouchableOpacity
                                                     key={`c-${p.poolId}-${slotData.time}`}
                                                     onPress={() => onSelectTime(slotData.time)}
-                                                    style={[styles.cellContainer, { backgroundColor: columnBg }]}
+                                                    style={[
+                                                        styles.cellContainer,
+                                                        { backgroundColor: columnBg }
+                                                    ]}
                                                 >
                                                     {split ? (
                                                         <View style={[styles.cell, styles.cellSplit, isSel && { borderColor: cA.text, borderWidth: 1 }]}>
@@ -311,6 +349,18 @@ const styles = StyleSheet.create({
     },
     selectedBar: {
         width: 14, height: 2, borderRadius: 1, backgroundColor: theme.colors.primary,
+    },
+    currentTimeIndicatorLine: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        width: 2,
+        backgroundColor: 'rgba(64,168,208,0.5)',
+        zIndex: 5,
+        shadowColor: 'rgba(64,168,208,0.8)',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 3,
     },
 
     // Pool section
