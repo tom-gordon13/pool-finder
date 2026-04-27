@@ -28,6 +28,7 @@ function TabNavigator() {
     <View style={{ flex: 1 }}>
       <TopNav />
       <Tab.Navigator
+      initialRouteName="Availability"
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
