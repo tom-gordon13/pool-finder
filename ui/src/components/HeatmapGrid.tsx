@@ -161,14 +161,6 @@ export function HeatmapGrid({
                             })}
                         </View>
 
-                        {/* Current time indicator line - positioned to only show over pool cells */}
-                        {currentTimePosition !== null && (
-                            <View style={[
-                                styles.currentTimeIndicatorLine,
-                                { left: currentTimePosition, top: TIME_HEADER_H }
-                            ]} />
-                        )}
-
                         {/* ── Per-pool sections ── */}
                         {pools.map((p, rowIndex) => {
                             const isActive = selectedPoolId === p.poolId;
@@ -210,6 +202,13 @@ export function HeatmapGrid({
 
                                     {/* Cell row */}
                                     <View style={styles.poolRow}>
+                                        {/* Current time indicator - only over cell row */}
+                                        {currentTimePosition !== null && (
+                                            <View style={[
+                                                styles.currentTimeIndicatorLine,
+                                                { left: currentTimePosition }
+                                            ]} />
+                                        )}
                                         {p.slots.map((slotData, colIdx) => {
                                             const isSel = slotData.time === selectedTime;
                                             const isCur = currentHour !== undefined && slotData.time === currentHour;
@@ -352,15 +351,16 @@ const styles = StyleSheet.create({
     },
     currentTimeIndicatorLine: {
         position: 'absolute',
-        top: 0,
-        bottom: 0,
+        top: -3,
+        bottom: -3,
         width: 2,
-        backgroundColor: 'rgba(64,168,208,0.5)',
+        backgroundColor: '#fff',
+        borderRadius: 1,
         zIndex: 5,
-        shadowColor: 'rgba(64,168,208,0.8)',
+        shadowColor: 'rgba(0,0,0,0.4)',
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.6,
-        shadowRadius: 3,
+        shadowOpacity: 1,
+        shadowRadius: 2,
     },
 
     // Pool section

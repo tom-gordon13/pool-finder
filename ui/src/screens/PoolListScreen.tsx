@@ -8,13 +8,13 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAllPools } from '../hooks/usePools';
 import { usePoolStore } from '../store/poolStore';
 import { LapSwimHours, Pool } from '../types/pool';
 import { theme } from '../theme';
 import { GradientBackground } from '../components/GradientBackground';
-import { LocationSelector } from '../components/LocationSelector';
 
 // ---------------------------------------------------------------------------
 // Helpers (Kept from original)
@@ -154,7 +154,7 @@ export default function PoolListScreen() {
     return (
       <GradientBackground>
         <SafeAreaView style={styles.container}>
-          <View style={{ padding: 16 }}>
+          <View style={{ padding: 16, marginTop: 90 }}>
             <View style={[styles.skeletonLine, { width: '100%', height: 40, borderRadius: 10 }]} />
           </View>
           {[1, 2, 3, 4].map(i => (
@@ -168,15 +168,10 @@ export default function PoolListScreen() {
   return (
     <GradientBackground>
       <SafeAreaView style={styles.container}>
-        {/* Location Selector */}
-        <View style={styles.headerContainer}>
-          <LocationSelector />
-        </View>
-
         {/* Search bar */}
-        <View style={styles.searchBarContainer}>
+        <View style={[styles.searchBarContainer, { marginTop: 90 }]}>
           <View style={styles.searchBar}>
-            <Text style={styles.searchIcon}>&#x1F50D;</Text>
+            <MaterialIcons name="search" size={20} color={theme.colors.textSecondary} style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search pools..."
@@ -254,9 +249,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   searchIcon: {
-    fontSize: 16,
     marginRight: 6,
-    color: theme.colors.textSecondary,
   },
   searchInput: {
     flex: 1,

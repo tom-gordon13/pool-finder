@@ -2,10 +2,12 @@ import React from 'react';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import PoolListScreen from '../screens/PoolListScreen';
 import PoolDetailScreen from '../screens/PoolDetailScreen';
 import LaneAvailabilityScreen from '../screens/LaneAvailabilityScreen';
+import { TopNav } from '../components/TopNav';
 import { theme } from '../theme';
 
 export type RootStackParamList = {
@@ -23,7 +25,9 @@ const Tab = createBottomTabNavigator<TabParamList>();
 
 function TabNavigator() {
   return (
-    <Tab.Navigator
+    <View style={{ flex: 1 }}>
+      <TopNav />
+      <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
@@ -43,7 +47,9 @@ function TabNavigator() {
         component={PoolListScreen}
         options={{
           title: 'Pools',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📋</Text>,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="pool" size={24} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -51,10 +57,13 @@ function TabNavigator() {
         component={LaneAvailabilityScreen}
         options={{
           title: 'Lanes',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🏊</Text>,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="view-column" size={24} color={color} />
+          ),
         }}
       />
-    </Tab.Navigator>
+      </Tab.Navigator>
+    </View>
   );
 }
 

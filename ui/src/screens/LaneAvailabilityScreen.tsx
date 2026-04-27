@@ -10,6 +10,7 @@ import {
 import { usePoolSchedule } from '../hooks/usePools';
 import { usePoolStore } from '../store/poolStore';
 import { HeatmapGrid } from '../components/HeatmapGrid';
+import { NowView } from '../components/NowView';
 import { theme } from '../theme';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -37,8 +38,11 @@ function getCurrentHour(): number {
   return now.getHours() + now.getMinutes() / 60;
 }
 
+type ViewMode = 'now' | 'lanes';
+
 export default function LaneAvailabilityScreen() {
   const { selectedLocation } = usePoolStore();
+  const [viewMode, setViewMode] = useState<ViewMode>('now');
   const [selectedDayIndex, setSelectedDayIndex] = useState(getTodayIndex);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null);
@@ -139,56 +143,85 @@ export default function LaneAvailabilityScreen() {
         </View>
       )}
 
-      {/* Day picker */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.dayPickerScroll}
-        contentContainerStyle={styles.dayPickerContent}
-      >
-        {DAYS.map((day, i) => {
-          const isToday = i === getTodayIndex();
-          const isSelected = i === selectedDayIndex;
-          return (
-            <TouchableOpacity
-              key={day}
-              style={[
-                styles.dayChip,
-                isSelected && styles.dayChipSelected,
-                isToday && !isSelected && styles.dayChipToday,
-              ]}
-              onPress={() => {
-                setSelectedDayIndex(i);
-                setSelectedTime(null);
-              }}
-            >
-              <Text style={[styles.dayChipText, isSelected && styles.dayChipTextSelected]}>
-                {DAY_ABBREV[i]}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      {/* View mode tabs */}
+      <View style={styles.viewModeTabs}>
+        <TouchableOpacity
+          style={[styles.viewModeTab, viewMode === 'now' && styles.viewModeTabSelected]}
+          onPress={() => setViewMode('now')}
+        >
+          <Text style={[styles.viewModeTabText, viewMode === 'now' && styles.viewModeTabTextSelected]}>
+            Now
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.viewModeTab, viewMode === 'lanes' && styles.viewModeTabSelected]}
+          onPress={() => setViewMode('lanes')}
+        >
+          <Text style={[styles.viewModeTabText, viewMode === 'lanes' && styles.viewModeTabTextSelected]}>
+            Lanes
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Heatmap */}
-      {heatmapRows.length === 0 ? (
-        <View style={styles.centered}>
-          <Text style={styles.emptyText}>No lap lane data for {selectedDay}.</Text>
-        </View>
-      ) : (
-        <HeatmapGrid
-          pools={heatmapRows}
-          timeSlots={TIME_SLOTS}
-          selectedTime={selectedTime}
-          onSelectTime={setSelectedTime}
-          onSelectPool={handleSelectPool}
-          selectedPoolId={selectedPoolId}
-          currentHour={getTodayIndex() === selectedDayIndex ? getCurrentHour() : undefined}
-        />
+      {/* Day picker - only show for lanes view */}
+      {viewMode === 'lanes' && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.dayPickerScroll}
+          contentContainerStyle={styles.dayPickerContent}
+        >
+          {DAYS.map((day, i) => {
+            const isToday = i === getTodayIndex();
+            const isSelected = i === selectedDayIndex;
+            return (
+              <TouchableOpacity
+                key={day}
+                style={[
+                  styles.dayChip,
+                  isSelected && styles.dayChipSelected,
+                  isToday && !isSelected && styles.dayChipToday,
+                ]}
+                onPress={() => {
+                  setSelectedDayIndex(i);
+                  setSelectedTime(null);
+                }}
+              >
+                <Text style={[styles.dayChipText, isSelected && styles.dayChipTextSelected]}>
+                  {DAY_ABBREV[i]}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       )}
 
-      {/* Detail card for selected pool + time */}
-      {selectedPoolEntry && selectedTime !== null && (
+      {/* Now view */}
+      {viewMode === 'now' && (
+        <NowView pools={heatmapRows} currentHour={getCurrentHour()} />
+      )}
+
+      {/* Heatmap - only show for lanes view */}
+      {viewMode === 'lanes' && (
+        <>
+          {heatmapRows.length === 0 ? (
+            <View style={styles.centered}>
+              <Text style={styles.emptyText}>No lap lane data for {selectedDay}.</Text>
+            </View>
+          ) : (
+            <HeatmapGrid
+              pools={heatmapRows}
+              timeSlots={TIME_SLOTS}
+              selectedTime={selectedTime}
+              onSelectTime={setSelectedTime}
+              onSelectPool={handleSelectPool}
+              selectedPoolId={selectedPoolId}
+              currentHour={getTodayIndex() === selectedDayIndex ? getCurrentHour() : undefined}
+            />
+          )}
+
+          {/* Detail card for selected pool + time */}
+          {selectedPoolEntry && selectedTime !== null && (
         <View style={styles.detailCard}>
           <Text style={styles.detailTitle}>{selectedPoolEntry.poolName}</Text>
           <Text style={styles.detailTime}>
@@ -216,8 +249,8 @@ export default function LaneAvailabilityScreen() {
         </View>
       )}
 
-      {/* Legend */}
-      <View style={styles.legend}>
+          {/* Legend */}
+          <View style={styles.legend}>
         {[
           { label: '6-8 lanes', color: theme.colors.statusOpen.text },
           { label: '3-5 lanes', color: theme.colors.statusLimited.text },
@@ -229,7 +262,9 @@ export default function LaneAvailabilityScreen() {
             <Text style={styles.legendText}>{item.label}</Text>
           </View>
         ))}
-      </View>
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -246,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   header: {
-    paddingTop: 56,
+    paddingTop: 90,
     paddingBottom: 8,
     paddingHorizontal: 16,
   },
@@ -384,5 +419,33 @@ const styles = StyleSheet.create({
   legendText: {
     color: theme.colors.textSecondary,
     fontSize: 12,
+  },
+  viewModeTabs: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  viewModeTab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: theme.colors.cardBackground,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  viewModeTabSelected: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  viewModeTabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
+  },
+  viewModeTabTextSelected: {
+    color: '#fff',
+    fontWeight: '700',
   },
 });

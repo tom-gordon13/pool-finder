@@ -26,6 +26,11 @@ interface PoolState {
   showOpenNow: boolean;
   setShowOpenNow: (show: boolean) => void;
 
+  // Favorite pools
+  favoritePoolIds: Set<string>;
+  toggleFavorite: (poolId: string) => void;
+  isFavorite: (poolId: string) => boolean;
+
   // Clear all pools
   clearPools: () => void;
 }
@@ -38,6 +43,7 @@ export const usePoolStore = create<PoolState>((set) => ({
   isLoading: false,
   error: null,
   showOpenNow: false,
+  favoritePoolIds: new Set<string>(),
 
   // Actions
   setSelectedLocation: (location) => set({ selectedLocation: location }),
@@ -61,6 +67,21 @@ export const usePoolStore = create<PoolState>((set) => ({
   setError: (error) => set({ error }),
 
   setShowOpenNow: (show) => set({ showOpenNow: show }),
+
+  toggleFavorite: (poolId) => set((state) => {
+    const newFavorites = new Set(state.favoritePoolIds);
+    if (newFavorites.has(poolId)) {
+      newFavorites.delete(poolId);
+    } else {
+      newFavorites.add(poolId);
+    }
+    return { favoritePoolIds: newFavorites };
+  }),
+
+  isFavorite: (poolId) => {
+    const state = usePoolStore.getState();
+    return state.favoritePoolIds.has(poolId);
+  },
 
   clearPools: () => set({ pools: [], selectedPool: null }),
 }));
