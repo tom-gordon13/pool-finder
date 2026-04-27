@@ -51,16 +51,18 @@ function getPeriod(h: number): string {
 
 const getCellColor = (lanes: number) => {
     if (lanes <= 0) return theme.colors.statusClosed;
-    if (lanes <= 2) return theme.colors.statusScarce;
-    if (lanes <= 5) return theme.colors.statusLimited;
-    return theme.colors.statusOpen;
+    if (lanes <= 2) return theme.colors.statusScarce;   // 1-2: orange-red
+    if (lanes <= 4) return theme.colors.statusLimited;  // 3-4: yellow
+    if (lanes <= 6) return theme.colors.statusModerate; // 5-6: light green
+    return theme.colors.statusOpen;                     // 7-8: dark green
 };
 
 const getStatusLabel = (lanes: number): string => {
     if (lanes <= 0) return 'Closed';
-    if (lanes <= 2) return 'Scarce';
-    if (lanes <= 5) return 'Limited';
-    return 'Open';
+    if (lanes <= 2) return 'Scarce';   // 1-2
+    if (lanes <= 4) return 'Limited';  // 3-4
+    if (lanes <= 6) return 'Moderate'; // 5-6
+    return 'Open';                     // 7-8
 };
 
 export function HeatmapGrid({

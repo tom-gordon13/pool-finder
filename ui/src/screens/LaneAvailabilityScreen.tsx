@@ -293,8 +293,9 @@ export default function LaneAvailabilityScreen() {
           {/* Legend */}
           <View style={styles.legend}>
         {[
-          { label: '6-8 lanes', color: theme.colors.statusOpen.bg },
-          { label: '3-5 lanes', color: theme.colors.statusLimited.bg },
+          { label: '7-8 lanes', color: theme.colors.statusOpen.bg },
+          { label: '5-6 lanes', color: theme.colors.statusModerate.bg },
+          { label: '3-4 lanes', color: theme.colors.statusLimited.bg },
           { label: '1-2 lanes', color: theme.colors.statusScarce.bg },
           { label: 'Closed', color: theme.colors.statusClosed.bg },
         ].map(item => (

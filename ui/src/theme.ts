@@ -22,22 +22,27 @@ export const theme = {
 
     // Status - Firmer, more solid colors from UI concepts
     statusOpen: {
-      bg: '#1D9E75',
+      bg: '#1D9E75',  // 7-8 lanes - dark green
       text: '#eef0f3',
       glow: '#1D9E75',
     },
-    statusLimited: {
-      bg: '#5DCAA5',
+    statusModerate: {
+      bg: '#5DCAA5',  // 5-6 lanes - light green
       text: '#0c1015',
       glow: '#5DCAA5',
     },
-    statusScarce: {
-      bg: '#EF9F27',
+    statusLimited: {
+      bg: '#EF9F27',  // 3-4 lanes - yellow
       text: '#0c1015',
       glow: '#EF9F27',
     },
+    statusScarce: {
+      bg: '#D85A30',  // 1-2 lanes - orange-red
+      text: '#eef0f3',
+      glow: '#D85A30',
+    },
     statusFull: {
-      bg: '#D85A30',
+      bg: '#D85A30',  // For pool list - same as scarce
       text: '#eef0f3',
       glow: '#D85A30',
     },

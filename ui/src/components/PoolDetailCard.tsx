@@ -9,11 +9,11 @@ interface PoolDetailCardProps {
 
 const getCellColor = (open: number | undefined | null, total: number) => {
     if (open === undefined || open === null) return theme.colors.statusClosed;
-    const pct = total > 0 ? open / total : 0;
     if (open === 0) return theme.colors.statusFull;
-    if (pct < 0.3) return theme.colors.statusScarce;
-    if (pct < 0.6) return theme.colors.statusLimited;
-    return theme.colors.statusOpen;
+    if (open <= 2) return theme.colors.statusScarce;   // 1-2: orange-red
+    if (open <= 4) return theme.colors.statusLimited;  // 3-4: yellow
+    if (open <= 6) return theme.colors.statusModerate; // 5-6: light green
+    return theme.colors.statusOpen;                    // 7-8: dark green
 };
 
 export function PoolDetailCard({ pool, selectedTime }: PoolDetailCardProps) {

@@ -48,7 +48,7 @@
         "closeTime": "4:00 PM"
       }
     ],
-    "lastUpdated": "2026-04-26T18:11:50.292Z"
+    "lastUpdated": "2026-04-27T16:12:40.129Z"
   },
   {
     "id": "east-boulder",
@@ -166,7 +166,7 @@
       {
         "dayOfWeek": "Sunday",
         "openTime": "10:00 AM",
-        "closeTime": "3:30 PM"
+        "closeTime": "12:30 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -196,6 +196,11 @@
       {
         "dayOfWeek": "Saturday",
         "openTime": "12:30 PM",
+        "closeTime": "1:30 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "12:30 PM",
         "closeTime": "3:30 PM"
       },
       {
@@ -224,6 +229,11 @@
         "closeTime": "11:00 AM"
       },
       {
+        "dayOfWeek": "Saturday",
+        "openTime": "1:30 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
         "dayOfWeek": "Monday",
         "openTime": "11:00 AM",
         "closeTime": "12:00 PM"
@@ -261,7 +271,7 @@
       {
         "dayOfWeek": "Monday",
         "openTime": "1:00 PM",
-        "closeTime": "2:15 PM"
+        "closeTime": "6:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -275,8 +285,8 @@
       },
       {
         "dayOfWeek": "Monday",
-        "openTime": "2:15 PM",
-        "closeTime": "3:00 PM"
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -290,8 +300,8 @@
       },
       {
         "dayOfWeek": "Monday",
-        "openTime": "3:00 PM",
-        "closeTime": "3:30 PM"
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -302,11 +312,6 @@
         "dayOfWeek": "Friday",
         "openTime": "4:30 PM",
         "closeTime": "6:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "3:30 PM",
-        "closeTime": "4:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -317,11 +322,6 @@
         "dayOfWeek": "Friday",
         "openTime": "6:30 PM",
         "closeTime": "7:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "4:30 PM",
-        "closeTime": "6:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -330,16 +330,6 @@
       },
       {
         "dayOfWeek": "Friday",
-        "openTime": "7:30 PM",
-        "closeTime": "9:00 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "6:30 PM",
-        "closeTime": "7:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
         "openTime": "7:30 PM",
         "closeTime": "9:00 PM"
       },
@@ -446,7 +436,7 @@
       {
         "dayOfWeek": "Sunday",
         "openTime": "10:00 AM",
-        "closeTime": "3:30 PM"
+        "closeTime": "12:30 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -476,6 +466,11 @@
       {
         "dayOfWeek": "Saturday",
         "openTime": "12:30 PM",
+        "closeTime": "1:30 PM"
+      },
+      {
+        "dayOfWeek": "Sunday",
+        "openTime": "12:30 PM",
         "closeTime": "3:30 PM"
       },
       {
@@ -504,6 +499,11 @@
         "closeTime": "11:00 AM"
       },
       {
+        "dayOfWeek": "Saturday",
+        "openTime": "1:30 PM",
+        "closeTime": "3:30 PM"
+      },
+      {
         "dayOfWeek": "Monday",
         "openTime": "11:00 AM",
         "closeTime": "12:00 PM"
@@ -541,7 +541,7 @@
       {
         "dayOfWeek": "Monday",
         "openTime": "1:00 PM",
-        "closeTime": "2:15 PM"
+        "closeTime": "6:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -555,8 +555,8 @@
       },
       {
         "dayOfWeek": "Monday",
-        "openTime": "2:15 PM",
-        "closeTime": "3:00 PM"
+        "openTime": "6:30 PM",
+        "closeTime": "7:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -570,8 +570,8 @@
       },
       {
         "dayOfWeek": "Monday",
-        "openTime": "3:00 PM",
-        "closeTime": "3:30 PM"
+        "openTime": "7:30 PM",
+        "closeTime": "9:00 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -582,11 +582,6 @@
         "dayOfWeek": "Friday",
         "openTime": "4:30 PM",
         "closeTime": "6:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "3:30 PM",
-        "closeTime": "4:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -597,11 +592,6 @@
         "dayOfWeek": "Friday",
         "openTime": "6:30 PM",
         "closeTime": "7:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "4:30 PM",
-        "closeTime": "6:30 PM"
       },
       {
         "dayOfWeek": "Wednesday",
@@ -610,21 +600,11 @@
       },
       {
         "dayOfWeek": "Friday",
-        "openTime": "7:30 PM",
-        "closeTime": "9:00 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
-        "openTime": "6:30 PM",
-        "closeTime": "7:30 PM"
-      },
-      {
-        "dayOfWeek": "Monday",
         "openTime": "7:30 PM",
         "closeTime": "9:00 PM"
       }
     ],
-    "lastUpdated": "2026-04-26T18:11:50.847Z"
+    "lastUpdated": "2026-04-27T16:12:40.691Z"
   },
   {
     "id": "north-boulder",
@@ -742,7 +722,7 @@
       {
         "dayOfWeek": "Sunday",
         "openTime": "12:30 PM",
-        "closeTime": "2:30 PM"
+        "closeTime": "5:30 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -775,11 +755,6 @@
         "closeTime": "1:00 PM"
       },
       {
-        "dayOfWeek": "Sunday",
-        "openTime": "2:30 PM",
-        "closeTime": "5:30 PM"
-      },
-      {
         "dayOfWeek": "Monday",
         "openTime": "4:30 PM",
         "closeTime": "6:00 PM"
@@ -792,7 +767,7 @@
       {
         "dayOfWeek": "Thursday",
         "openTime": "12:00 PM",
-        "closeTime": "3:00 PM"
+        "closeTime": "4:30 PM"
       },
       {
         "dayOfWeek": "Friday",
@@ -816,8 +791,8 @@
       },
       {
         "dayOfWeek": "Thursday",
-        "openTime": "3:00 PM",
-        "closeTime": "6:30 PM"
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -831,7 +806,7 @@
       },
       {
         "dayOfWeek": "Thursday",
-        "openTime": "6:30 PM",
+        "openTime": "6:00 PM",
         "closeTime": "7:00 PM"
       },
       {
@@ -952,7 +927,7 @@
       {
         "dayOfWeek": "Sunday",
         "openTime": "12:30 PM",
-        "closeTime": "2:30 PM"
+        "closeTime": "5:30 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -985,11 +960,6 @@
         "closeTime": "1:00 PM"
       },
       {
-        "dayOfWeek": "Sunday",
-        "openTime": "2:30 PM",
-        "closeTime": "5:30 PM"
-      },
-      {
         "dayOfWeek": "Monday",
         "openTime": "4:30 PM",
         "closeTime": "6:00 PM"
@@ -1002,7 +972,7 @@
       {
         "dayOfWeek": "Thursday",
         "openTime": "12:00 PM",
-        "closeTime": "3:00 PM"
+        "closeTime": "4:30 PM"
       },
       {
         "dayOfWeek": "Friday",
@@ -1026,8 +996,8 @@
       },
       {
         "dayOfWeek": "Thursday",
-        "openTime": "3:00 PM",
-        "closeTime": "6:30 PM"
+        "openTime": "4:30 PM",
+        "closeTime": "6:00 PM"
       },
       {
         "dayOfWeek": "Monday",
@@ -1041,7 +1011,7 @@
       },
       {
         "dayOfWeek": "Thursday",
-        "openTime": "6:30 PM",
+        "openTime": "6:00 PM",
         "closeTime": "7:00 PM"
       },
       {
@@ -1060,7 +1030,7 @@
         "closeTime": "8:30 PM"
       }
     ],
-    "lastUpdated": "2026-04-26T18:11:51.384Z"
+    "lastUpdated": "2026-04-27T16:12:41.231Z"
   },
   {
     "id": "south-boulder",
@@ -1111,7 +1081,7 @@
         "closeTime": "4:00 PM"
       }
     ],
-    "lastUpdated": "2026-04-26T18:11:51.945Z"
+    "lastUpdated": "2026-04-27T16:12:41.801Z"
   },
   {
     "id": "spruce-pool",
@@ -1163,6 +1133,6 @@
         "closeTime": "6:00 PM"
       }
     ],
-    "lastUpdated": "2026-04-26T18:11:52.532Z"
+    "lastUpdated": "2026-04-27T16:12:42.462Z"
   }
 ]

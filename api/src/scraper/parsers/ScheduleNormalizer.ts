@@ -58,7 +58,11 @@ export class ScheduleNormalizer {
     }
 
     /**
-     * Consolidates duplicate slots by summing lane counts.
+     * Consolidates duplicate slots by taking the maximum lane count.
+     * When multiple time ranges overlap for the same 30-min slot, we take the max
+     * because overlapping ranges typically represent the same physical lanes being
+     * available during different time periods (e.g., "6-8am: 8 lanes" and "7-9am: 8 lanes"
+     * both apply at 7-8am, but there are still only 8 lanes total, not 16).
      */
     static consolidateSlots(slots: TimeSlot[]): TimeSlot[] {
         const map = new Map<string, TimeSlot>();
@@ -67,14 +71,10 @@ export class ScheduleNormalizer {
             const key = `${slot.dayOfWeek}-${slot.startHour}`;
             if (map.has(key)) {
                 const existing = map.get(key)!;
-                // If we have multiple entries for the same slot, what do we do?
-                // Example: "Lanes 1-4 6-8pm" and "Lanes 5-8 6-8pm" -> Sum = 8.
-                // Example: "Lanes 1-8 6-6:30" and "Lanes 1-8 6:30-7" -> distinct slots, no overlap.
-
-                // If we have overlapping slots from the SAME source?
-                // e.g. "6:00-7:00" and "6:30-7:30". overlap at 6:30-7:00.
-                // We should SUM them.
-                existing.lanes += slot.lanes;
+                // Take the maximum lane count for overlapping slots
+                // This handles cases where overlapping time ranges describe
+                // the same physical lanes available at different periods
+                existing.lanes = Math.max(existing.lanes, slot.lanes);
             } else {
                 map.set(key, { ...slot });
             }
