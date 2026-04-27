@@ -10,7 +10,6 @@ import {
 import { usePoolSchedule } from '../hooks/usePools';
 import { usePoolStore } from '../store/poolStore';
 import { HeatmapGrid } from '../components/HeatmapGrid';
-import { NowView } from '../components/NowView';
 import { theme } from '../theme';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -38,12 +37,10 @@ function getCurrentHour(): number {
   return now.getHours() + now.getMinutes() / 60;
 }
 
-type ViewMode = 'now' | 'lanes';
 type LaneViewMode = 'detailed' | 'compact';
 
 export default function LaneAvailabilityScreen() {
   const { selectedLocation } = usePoolStore();
-  const [viewMode, setViewMode] = useState<ViewMode>('now');
   const [laneViewMode, setLaneViewMode] = useState<LaneViewMode>('detailed');
   const [selectedDayIndex, setSelectedDayIndex] = useState(getTodayIndex);
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
@@ -145,29 +142,8 @@ export default function LaneAvailabilityScreen() {
         </View>
       )}
 
-      {/* View mode tabs */}
-      <View style={styles.viewModeTabs}>
-        <TouchableOpacity
-          style={[styles.viewModeTab, viewMode === 'now' && styles.viewModeTabSelected]}
-          onPress={() => setViewMode('now')}
-        >
-          <Text style={[styles.viewModeTabText, viewMode === 'now' && styles.viewModeTabTextSelected]}>
-            Now
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.viewModeTab, viewMode === 'lanes' && styles.viewModeTabSelected]}
-          onPress={() => setViewMode('lanes')}
-        >
-          <Text style={[styles.viewModeTabText, viewMode === 'lanes' && styles.viewModeTabTextSelected]}>
-            Lanes
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Day picker and view toggle - only show for lanes view */}
-      {viewMode === 'lanes' && (
-        <>
+      {/* Day picker and view toggle */}
+      <>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -234,16 +210,9 @@ export default function LaneAvailabilityScreen() {
             </TouchableOpacity>
           </View>
         </>
-      )}
 
-      {/* Now view */}
-      {viewMode === 'now' && (
-        <NowView pools={heatmapRows} currentHour={getCurrentHour()} />
-      )}
-
-      {/* Heatmap - only show for lanes view */}
-      {viewMode === 'lanes' && (
-        <>
+      {/* Heatmap */}
+      <>
           {heatmapRows.length === 0 ? (
             <View style={styles.centered}>
               <Text style={styles.emptyText}>No lap lane data for {selectedDay}.</Text>
@@ -305,8 +274,7 @@ export default function LaneAvailabilityScreen() {
           </View>
         ))}
           </View>
-        </>
-      )}
+      </>
     </View>
   );
 }

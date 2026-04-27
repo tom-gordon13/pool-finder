@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import PoolListScreen from '../screens/PoolListScreen';
+import NowScreen from '../screens/NowScreen';
 import PoolDetailScreen from '../screens/PoolDetailScreen';
 import LaneAvailabilityScreen from '../screens/LaneAvailabilityScreen';
 import { TopNav } from '../components/TopNav';
@@ -16,7 +16,7 @@ export type RootStackParamList = {
 };
 
 export type TabParamList = {
-  PoolList: undefined;
+  Now: undefined;
   Availability: undefined;
 };
 
@@ -44,22 +44,22 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="PoolList"
-        component={PoolListScreen}
-        options={{
-          title: 'Pools',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="pool" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Availability"
         component={LaneAvailabilityScreen}
         options={{
           title: 'Lanes',
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="view-column" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Now"
+        component={NowScreen}
+        options={{
+          title: 'Now',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="schedule" size={24} color={color} />
           ),
         }}
       />
