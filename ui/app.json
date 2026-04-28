@@ -24,7 +24,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/icon.svg",
+      "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "output": "single",
       "name": "Pool Finder",
