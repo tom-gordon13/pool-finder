@@ -1,18 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { usePoolSchedule } from '../hooks/usePools';
 import { usePoolStore } from '../store/poolStore';
 import { NowView } from '../components/NowView';
+import { PoolWeekView } from '../components/PoolWeekView';
 import { theme } from '../theme';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-// Whole-hour slots from 6 AM to 9 PM
+// Every hour from 6 AM to 9 PM
 const TIME_SLOTS: number[] = [];
 for (let h = 6; h <= 21; h++) TIME_SLOTS.push(h);
 
@@ -25,9 +27,16 @@ function getCurrentHour(): number {
   return now.getHours() + now.getMinutes() / 60;
 }
 
+interface PoolSlot {
+  poolId: string;
+  poolName: string;
+  slots: { time: number; lanes: number; lanesHalf: number }[];
+}
+
 export default function NowScreen() {
   const { selectedLocation } = usePoolStore();
   const { data, isLoading, error } = usePoolSchedule(selectedLocation);
+  const [selectedPool, setSelectedPool] = useState<PoolSlot | null>(null);
 
   const todayIndex = getTodayIndex();
   const selectedDay = DAYS[todayIndex];
@@ -54,6 +63,43 @@ export default function NowScreen() {
       });
   }, [data, selectedDay]);
 
+  // Build week data for the selected pool (all days)
+  const weekData = useMemo(() => {
+    if (!data?.pools || !selectedPool) return new Map();
+
+    const poolData = data.pools.find(p => p.poolId === selectedPool.poolId);
+    if (!poolData) return new Map();
+
+    const weekMap = new Map<string, PoolSlot>();
+
+    DAYS.forEach(day => {
+      const slotMap = new Map<number, number>();
+      for (const s of poolData.slots) {
+        if (s.dayOfWeek === day) slotMap.set(s.startHour, s.lanes);
+      }
+
+      weekMap.set(day, {
+        poolId: poolData.poolId,
+        poolName: poolData.poolName,
+        slots: TIME_SLOTS.map(t => ({
+          time: t,
+          lanes: slotMap.get(t) ?? 0,
+          lanesHalf: slotMap.get(t + 0.5) ?? 0,
+        })),
+      });
+    });
+
+    return weekMap;
+  }, [data, selectedPool]);
+
+  const handlePoolClick = (pool: PoolSlot) => {
+    setSelectedPool(pool);
+  };
+
+  const handleBack = () => {
+    setSelectedPool(null);
+  };
+
   if (isLoading) {
     return (
       <View style={styles.centered}>
@@ -75,10 +121,24 @@ export default function NowScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Now</Text>
+        {selectedPool ? (
+          <>
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+              <Text style={styles.backText}>‹</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>{selectedPool.poolName}</Text>
+          </>
+        ) : (
+          <Text style={styles.title}>Now</Text>
+        )}
       </View>
 
-      <NowView pools={heatmapRows} currentHour={getCurrentHour()} />
+      {/* Show either NowView or PoolWeekView */}
+      {selectedPool ? (
+        <PoolWeekView pool={selectedPool} weekData={weekData} onBack={handleBack} />
+      ) : (
+        <NowView pools={heatmapRows} currentHour={getCurrentHour()} onPoolClick={handlePoolClick} />
+      )}
     </View>
   );
 }
@@ -100,6 +160,19 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.cardBorder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  backButton: {
+    padding: 4,
+    marginLeft: -8,
+  },
+  backText: {
+    fontSize: 32,
+    color: theme.colors.textSecondary,
+    fontWeight: '300',
+    lineHeight: 32,
   },
   title: {
     fontSize: 28,
