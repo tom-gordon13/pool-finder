@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Converter</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Convert SVG to PNG Icons</h1>
+    <p>This page will convert the SVG icon to PNG format for app icons.</p>
+
+    <div id="outputs"></div>
+
+    <script>
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="1024" height="1024">
+  <rect width="200" height="200" rx="44" fill="#0a0d12"/>
+  <g fill="none" stroke="#5DCAA5" stroke-linecap="round" stroke-width="11">
+    <path d="M 28 68 Q 65 48 100 68 T 172 68" opacity="0.28"/>
+    <path d="M 28 100 Q 65 80 100 100 T 172 100"/>
+    <path d="M 28 132 Q 65 112 100 132 T 172 132" opacity="0.28"/>
+  </g>
+  <circle cx="100" cy="100" r="8" fill="#ffffff"/>
+</svg>`;
+
+        const sizes = [
+            { name: 'icon.png', size: 1024, desc: 'App Icon (iOS/Android)' },
+            { name: 'adaptive-icon.png', size: 1024, desc: 'Android Adaptive Icon' },
+            { name: 'favicon.png', size: 192, desc: 'Favicon / Web Icon' },
+            { name: 'splash-icon.png', size: 1024, desc: 'Splash Screen Icon' }
+        ];
+
+        function createPNG(size, name, desc) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            const img = new Image();
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+
+                const container = document.createElement('div');
+                container.style.margin = '20px 0';
+                container.style.padding = '15px';
+                container.style.border = '1px solid #ddd';
+                container.style.borderRadius = '8px';
+
+                const title = document.createElement('h3');
+                title.textContent = `${name} (${size}x${size}px)`;
+                container.appendChild(title);
+
+                const description = document.createElement('p');
+                description.textContent = desc;
+                description.style.color = '#666';
+                container.appendChild(description);
+
+                const preview = document.createElement('canvas');
+                preview.width = 128;
+                preview.height = 128;
+                const previewCtx = preview.getContext('2d');
+                previewCtx.drawImage(canvas, 0, 0, 128, 128);
+                container.appendChild(preview);
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = `Download ${name}`;
+                downloadBtn.onclick = function() {
+                    canvas.toBlob(function(blob) {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = name;
+                        a.click();
+                    }, 'image/png');
+                };
+                container.appendChild(downloadBtn);
+
+                document.getElementById('outputs').appendChild(container);
+            };
+
+            img.src = url;
+        }
+
+        sizes.forEach(({ size, name, desc }) => {
+            createPNG(size, name, desc);
+        });
+    </script>
+</body>
+</html>

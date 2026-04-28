@@ -24,14 +24,14 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/icon.svg",
       "bundler": "metro",
       "output": "single",
       "name": "Pool Finder",
       "shortName": "Pool Finder",
       "description": "Find lap swimming pools near you",
-      "backgroundColor": "#ffffff",
-      "themeColor": "#007AFF",
+      "backgroundColor": "#0a0d12",
+      "themeColor": "#5DCAA5",
       "display": "standalone",
       "orientation": "portrait",
       "scope": "/",
