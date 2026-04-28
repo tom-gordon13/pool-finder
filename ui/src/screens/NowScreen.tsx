@@ -54,10 +54,6 @@ export default function NowScreen() {
       });
   }, [data, selectedDay]);
 
-  const weekLabel = data?.weekStart
-    ? `Week of ${new Date(data.weekStart).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-    : null;
-
   if (isLoading) {
     return (
       <View style={styles.centered}>
@@ -80,19 +76,7 @@ export default function NowScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Now</Text>
-        {weekLabel ? <Text style={styles.weekLabel}>{weekLabel}</Text> : null}
       </View>
-
-      {/* Stale data indicator */}
-      {data._metadata?.stale && (
-        <View style={styles.staleDataBanner}>
-          <Text style={styles.staleDataText}>
-            {data._metadata.isRefreshing
-              ? '⟳ Refreshing schedule data...'
-              : '⚠ Showing older schedule data'}
-          </Text>
-        </View>
-      )}
 
       <NowView pools={heatmapRows} currentHour={getCurrentHour()} />
     </View>
@@ -116,30 +100,11 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.cardBorder,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '800',
     color: theme.colors.textPrimary,
-  },
-  weekLabel: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-  },
-  staleDataBanner: {
-    backgroundColor: 'rgba(255, 200, 100, 0.15)',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 200, 100, 0.3)',
-  },
-  staleDataText: {
-    color: '#ffcc66',
-    fontSize: 12,
-    textAlign: 'center',
   },
   loadingText: {
     marginTop: 12,
