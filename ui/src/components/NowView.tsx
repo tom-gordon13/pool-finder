@@ -99,7 +99,7 @@ export function NowView({ pools, currentHour }: NowViewProps) {
                   {getStatusLabel(currentLanes)}
                 </Text>
               </View>
-              <Text style={[styles.laneCount, { color: statusColor.text }]}>
+              <Text style={styles.laneCount}>
                 {currentLanes > 0 ? `${currentLanes} lane${currentLanes !== 1 ? 's' : ''}` : 'Closed'}
               </Text>
             </View>
@@ -192,6 +192,7 @@ const styles = StyleSheet.create({
   laneCount: {
     fontSize: 15,
     fontWeight: '600',
+    color: theme.colors.textPrimary,
   },
   emptyState: {
     padding: 40,

@@ -242,12 +242,12 @@ export function HeatmapGrid({
                                                         <View style={[styles.cell, styles.cellSplit, { width: cellWidth, height: cellHeight }, isSel && { borderColor: '#fff', borderWidth: 2 }]}>
                                                             <View style={[styles.cellHalf, styles.cellHalfLeft, { backgroundColor: cA.bg }]}>
                                                                 <Text style={[styles.cellHalfText, { color: cA.text }]}>
-                                                                    {slotData.lanes > 0 ? slotData.lanes : '·'}
+                                                                    {slotData.lanes}
                                                                 </Text>
                                                             </View>
                                                             <View style={[styles.cellHalf, styles.cellHalfRight, { backgroundColor: cB.bg }]}>
                                                                 <Text style={[styles.cellHalfText, { color: cB.text }]}>
-                                                                    {slotData.lanesHalf > 0 ? slotData.lanesHalf : '·'}
+                                                                    {slotData.lanesHalf}
                                                                 </Text>
                                                             </View>
                                                         </View>
@@ -268,7 +268,7 @@ export function HeatmapGrid({
                                                                     { color: cA.text },
                                                                     isSel && { fontWeight: '900', fontSize: 18 },
                                                                 ]}>
-                                                                    {slotData.lanes > 0 ? slotData.lanes : '·'}
+                                                                    {slotData.lanes}
                                                                 </Text>
                                                             )}
                                                         </View>

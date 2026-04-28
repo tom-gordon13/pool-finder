@@ -73,19 +73,6 @@ export default function LaneAvailabilityScreen() {
       });
   }, [data, selectedDay]);
 
-  // Selected pool details for the detail card
-  const selectedPoolEntry = useMemo(() => {
-    if (!selectedPoolId || !data?.pools) return null;
-    return data.pools.find(p => p.poolId === selectedPoolId) ?? null;
-  }, [selectedPoolId, data]);
-
-  const selectedPoolSlotsForDay = useMemo(() => {
-    if (!selectedPoolEntry) return [];
-    return selectedPoolEntry.slots
-      .filter(s => s.dayOfWeek === selectedDay)
-      .sort((a, b) => a.startHour - b.startHour);
-  }, [selectedPoolEntry, selectedDay]);
-
   const handleSelectPool = (poolId: string) => {
     setSelectedPoolId(prev => (prev === poolId ? null : poolId));
   };
@@ -130,17 +117,6 @@ export default function LaneAvailabilityScreen() {
         <Text style={styles.title}>Lane Availability</Text>
         {weekLabel ? <Text style={styles.weekLabel}>{weekLabel}</Text> : null}
       </View>
-
-      {/* Stale data indicator */}
-      {data._metadata?.stale && (
-        <View style={styles.staleDataBanner}>
-          <Text style={styles.staleDataText}>
-            {data._metadata.isRefreshing
-              ? '⟳ Refreshing schedule data...'
-              : '⚠ Showing older schedule data'}
-          </Text>
-        </View>
-      )}
 
       {/* Day picker and view toggle */}
       <>
@@ -229,35 +205,6 @@ export default function LaneAvailabilityScreen() {
               viewMode={laneViewMode}
             />
           )}
-
-          {/* Detail card for selected pool + time - only in detailed mode */}
-          {laneViewMode === 'detailed' && selectedPoolEntry && selectedTime !== null && (
-        <View style={styles.detailCard}>
-          <Text style={styles.detailTitle}>{selectedPoolEntry.poolName}</Text>
-          <Text style={styles.detailTime}>
-            {formatHour(selectedTime)} \u2013 {formatHour(selectedTime + 1)}
-          </Text>
-          {(() => {
-            if (selectedTime === null) return null;
-            const slotOh = selectedPoolSlotsForDay.find(s => s.startHour === selectedTime);
-            const slotHalf = selectedPoolSlotsForDay.find(s => s.startHour === selectedTime + 0.5);
-            if (!slotOh && !slotHalf) return <Text style={styles.detailClosed}>Closed</Text>;
-            const lanesOh = slotOh?.lanes ?? 0;
-            const lanesHalf = slotHalf?.lanes ?? 0;
-            if (lanesOh === lanesHalf) {
-              return lanesOh > 0
-                ? <Text style={styles.detailLanes}>{lanesOh} lane{lanesOh !== 1 ? 's' : ''} open all hour</Text>
-                : <Text style={styles.detailClosed}>Closed</Text>;
-            }
-            return (
-              <View>
-                <Text style={styles.detailLanes}>:00 – :30 · {lanesOh} lane{lanesOh !== 1 ? 's' : ''}</Text>
-                <Text style={styles.detailLanes}>:30 – :00 · {lanesHalf} lane{lanesHalf !== 1 ? 's' : ''}</Text>
-              </View>
-            );
-          })()}
-        </View>
-      )}
 
           {/* Legend */}
           <View style={styles.legend}>
@@ -380,33 +327,6 @@ const styles = StyleSheet.create({
   dayChipTextSelected: {
     color: '#fff',
     fontWeight: '700',
-  },
-  detailCard: {
-    margin: 16,
-    padding: 16,
-    backgroundColor: theme.colors.cardBackground,
-    borderRadius: 12,
-  },
-  detailTitle: {
-    color: theme.colors.textPrimary,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  detailTime: {
-    color: theme.colors.textSecondary,
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  detailLanes: {
-    color: theme.colors.statusOpen.text,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  detailClosed: {
-    color: theme.colors.statusClosed.text,
-    fontSize: 15,
-    fontWeight: '600',
   },
   legend: {
     flexDirection: 'row',
