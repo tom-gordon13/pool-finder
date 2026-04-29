@@ -32,7 +32,25 @@ function formatTimeLabel(hour: number): string {
   return `${hour - 12}p`;
 }
 
+function getTodayDayName(): string {
+  const dayIndex = (new Date().getDay() + 6) % 7; // Mon=0 … Sun=6
+  return DAYS_FULL[dayIndex];
+}
+
+function getCurrentHour(): number {
+  return new Date().getHours();
+}
+
+function getCurrentMinutes(): number {
+  return new Date().getMinutes();
+}
+
 export function PoolWeekView({ pool, weekData, onBack }: PoolWeekViewProps) {
+  const currentDay = getTodayDayName();
+  const currentHour = getCurrentHour();
+  const currentMinutes = getCurrentMinutes();
+  const currentTimePosition = (currentMinutes / 60) * 100; // Percentage through the hour
+
   // Build grid data: for each day and time slot, get the lane count
   const gridData = useMemo(() => {
     const grid: { [day: string]: { [time: number]: number } } = {};
@@ -60,36 +78,64 @@ export function PoolWeekView({ pool, weekData, onBack }: PoolWeekViewProps) {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Best times</Text>
-        <Text style={styles.subtitle}>Tap a cell to see details</Text>
 
         {/* Calendar Grid */}
         <View style={styles.grid}>
           {/* Header row with day labels */}
           <View style={styles.gridRow}>
             <View style={styles.timeLabel} />
-            {DAYS_SHORT.map((day, idx) => (
-              <View key={day} style={styles.dayLabel}>
-                <Text style={styles.dayLabelText}>{day}</Text>
-              </View>
-            ))}
+            {DAYS_SHORT.map((day, idx) => {
+              const isToday = DAYS_FULL[idx] === currentDay;
+              return (
+                <View key={day} style={styles.dayLabel}>
+                  <Text style={[styles.dayLabelText, isToday && styles.dayLabelTextToday]}>
+                    {day}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
 
           {/* Time rows */}
-          {TIME_SLOTS.map(time => (
-            <View key={time} style={styles.gridRow}>
-              <View style={styles.timeLabel}>
-                <Text style={styles.timeLabelText}>{formatTimeLabel(time)}</Text>
-              </View>
-              {DAYS_FULL.map(day => {
+          {TIME_SLOTS.map(time => {
+            const isCurrentHourRow = time === currentHour;
+            return (
+              <View key={time} style={styles.gridRow}>
+                <View style={styles.timeLabel}>
+                  <Text style={[
+                    styles.timeLabelText,
+                    isCurrentHourRow && styles.timeLabelTextCurrent
+                  ]}>
+                    {formatTimeLabel(time)}
+                  </Text>
+                </View>
+                {DAYS_FULL.map(day => {
                 const lanes = gridData[day][time];
                 const color = getStatusColor(lanes);
+                const isCurrentDay = day === currentDay;
+                const isCurrentHour = time === currentHour;
+                const isCurrentCell = isCurrentDay && isCurrentHour;
+                const isDimmed = !isCurrentDay;
 
                 return (
                   <TouchableOpacity
                     key={`${day}-${time}`}
-                    style={[styles.cell, { backgroundColor: color.bg }]}
+                    style={[
+                      styles.cell,
+                      { backgroundColor: color.bg },
+                      isDimmed && styles.cellDimmed,
+                      isCurrentCell && styles.cellCurrentCell
+                    ]}
                     activeOpacity={0.7}
                   >
+                    {/* Current hour indicator line - only in current day column */}
+                    {isCurrentCell && (
+                      <View style={[
+                        styles.currentHourLine,
+                        { top: `${currentTimePosition}%` }
+                      ]} />
+                    )}
+
                     {lanes > 0 && (
                       <Text style={[styles.cellText, { color: color.text }]}>
                         {lanes}
@@ -99,7 +145,8 @@ export function PoolWeekView({ pool, weekData, onBack }: PoolWeekViewProps) {
                 );
               })}
             </View>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
     </View>
@@ -117,13 +164,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '500',
     color: theme.colors.textPrimary,
-    marginBottom: 4,
-    letterSpacing: -0.3,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
     marginBottom: 20,
+    letterSpacing: -0.3,
   },
   grid: {
     marginBottom: 20,
@@ -132,6 +174,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 3,
     marginBottom: 3,
+  },
+  currentHourLine: {
+    position: 'absolute',
+    left: -8,
+    right: -8,
+    marginTop: -1.5,
+    height: 3,
+    backgroundColor: '#fff',
+    borderRadius: 1.5,
+    zIndex: 10,
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderColor: 'rgba(0, 0, 0, 0.3)',
+    shadowColor: 'rgba(0,0,0,0.4)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 2,
   },
   timeLabel: {
     width: 28,
@@ -142,6 +201,10 @@ const styles = StyleSheet.create({
   timeLabelText: {
     fontSize: 10,
     color: '#6b727c',
+  },
+  timeLabelTextCurrent: {
+    color: theme.colors.primary,
+    fontWeight: '700',
   },
   dayLabel: {
     flex: 1,
@@ -154,12 +217,28 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     fontWeight: '500',
   },
+  dayLabelTextToday: {
+    color: theme.colors.primary,
+    fontWeight: '700',
+  },
   cell: {
     flex: 1,
     aspectRatio: 1,
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  cellDimmed: {
+    opacity: 0.65,
+  },
+  cellCurrentCell: {
+    borderWidth: 2,
+    borderColor: '#5DCAA5',
+    shadowColor: '#5DCAA5',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
   cellText: {
     fontSize: 11,
