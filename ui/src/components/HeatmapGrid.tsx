@@ -143,7 +143,7 @@ export function HeatmapGrid({
                     showsHorizontalScrollIndicator={false}
                     scrollEventThrottle={16}
                     scrollEnabled={viewMode === 'detailed'}
-                    contentContainerStyle={viewMode === 'compact' ? { flex: 1 } : undefined}
+                    contentContainerStyle={viewMode === 'compact' ? { flex: 1 } : { paddingBottom: 100 }}
                 >
                     <View style={viewMode === 'compact' ? { flex: 1 } : undefined}>
                         {/* ── Time header row ── */}
