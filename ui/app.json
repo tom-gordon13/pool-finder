@@ -13,7 +13,9 @@
       "backgroundColor": "#0a0d12"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/icon.png",
+      "bundleIdentifier": "com.poolfinder.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,19 +26,18 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/icon.png",
       "bundler": "metro",
       "output": "single",
-      "name": "Pool Finder",
-      "shortName": "Pool Finder",
+      "name": "Currents",
+      "shortName": "Currents",
       "description": "Find lap swimming pools near you",
       "backgroundColor": "#0a0d12",
       "themeColor": "#5DCAA5",
       "display": "standalone",
       "orientation": "portrait",
       "scope": "/",
-      "startUrl": "/",
-      "appleTouchIcon": "./assets/apple-touch-icon.png"
+      "startUrl": "/"
     }
   }
 }
