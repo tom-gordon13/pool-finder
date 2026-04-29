@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Apple Touch Icon</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Create Apple Touch Icon (180x180)</h1>
+    <p>This will create the icon iOS needs for home screen bookmarks.</p>
+
+    <div id="output"></div>
+
+    <script>
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="180" height="180">
+  <rect width="200" height="200" rx="44" fill="#0a0d12"/>
+  <g fill="none" stroke="#5DCAA5" stroke-linecap="round" stroke-width="11">
+    <path d="M 28 68 Q 65 48 100 68 T 172 68" opacity="0.28"/>
+    <path d="M 28 100 Q 65 80 100 100 T 172 100"/>
+    <path d="M 28 132 Q 65 112 100 132 T 172 132" opacity="0.28"/>
+  </g>
+  <circle cx="100" cy="100" r="8" fill="#ffffff"/>
+</svg>`;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 180;
+        canvas.height = 180;
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        const blob = new Blob([svg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, 180, 180);
+            URL.revokeObjectURL(url);
+
+            const container = document.createElement('div');
+            container.style.margin = '20px 0';
+            container.style.padding = '15px';
+            container.style.border = '1px solid #ddd';
+            container.style.borderRadius = '8px';
+
+            const title = document.createElement('h3');
+            title.textContent = 'apple-touch-icon.png (180x180)';
+            container.appendChild(title);
+
+            const description = document.createElement('p');
+            description.textContent = 'Required for iOS home screen bookmarks';
+            description.style.color = '#666';
+            container.appendChild(description);
+
+            const preview = document.createElement('canvas');
+            preview.width = 180;
+            preview.height = 180;
+            const previewCtx = preview.getContext('2d');
+            previewCtx.drawImage(canvas, 0, 0, 180, 180);
+            container.appendChild(preview);
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download apple-touch-icon.png';
+            downloadBtn.style.backgroundColor = '#007AFF';
+            downloadBtn.style.color = 'white';
+            downloadBtn.style.border = 'none';
+            downloadBtn.style.borderRadius = '8px';
+            downloadBtn.onclick = function() {
+                canvas.toBlob(function(blob) {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'apple-touch-icon.png';
+                    a.click();
+                }, 'image/png');
+            };
+            container.appendChild(downloadBtn);
+
+            const instructions = document.createElement('div');
+            instructions.style.marginTop = '15px';
+            instructions.style.padding = '10px';
+            instructions.style.backgroundColor = '#f0f0f0';
+            instructions.style.borderRadius = '5px';
+            instructions.innerHTML = `
+                <strong>Instructions:</strong><br>
+                1. Click "Download apple-touch-icon.png"<br>
+                2. Save it to: ui/assets/apple-touch-icon.png<br>
+                3. Rebuild the app: npm run build<br>
+                4. Deploy and try again
+            `;
+            container.appendChild(instructions);
+
+            document.getElementById('output').appendChild(container);
+        };
+
+        img.src = url;
+    </script>
+</body>
+</html>

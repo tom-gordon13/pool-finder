@@ -35,7 +35,8 @@
       "display": "standalone",
       "orientation": "portrait",
       "scope": "/",
-      "startUrl": "/"
+      "startUrl": "/",
+      "appleTouchIcon": "./assets/apple-touch-icon.png"
     }
   }
 }
